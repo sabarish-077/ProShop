@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop products — ProShop</title>
+  <meta name="description" content="Shop watches, audio, cameras, and leather goods. Filter by brand, product type, and delivery speed.">
+
+  <!-- Google Fonts: Playfair Display & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3.3 CSS & Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Master Luxury Stylesheet -->
+  <link href="/static/css/luxury-proshop.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Utility Bar -->
+  <div class="top-utility-bar py-1.5 px-3">
+    <div class="container-fluid max-w-1440 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <span class="concierge-badge"><i class="bi bi-patch-check-fill"></i> Shop ProShop</span>
+        <span class="d-none d-md-inline text-secondary">Secure delivery in India and worldwide</span>
+      </div>
+      <div class="d-flex align-items-center gap-4">
+        <a href="#" aria-label="Customer support" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal"><i class="bi bi-headset text-warning"></i> Customer support</a>
+        <a href="shop.html" class="d-none d-sm-inline">Shop</a>
+        <span class="text-white-50">INR (₹)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="proshop-header py-2.5 px-3">
+    <div class="container-fluid max-w-1440">
+      <div class="row store-header-row align-items-center g-2 g-md-4">
+        <div class="col-auto">
+          <a href="index.html" class="brand-logo-container" aria-label="ProShop Home">
+            <img src="/static/assets/images/logo.svg" alt="ProShop Logo">
+          </a>
+        </div>
+        <div class="col flex-grow-1">
+          <form id="global-search-form" class="global-search-wrapper" action="shop.html" method="GET">
+            <select class="dept-select d-none d-lg-block" name="dept">
+              <option value="All">All categories</option>
+              <option value="Electronics & Hi-Fi">Electronics & Hi-Fi</option>
+              <option value="Fine Horology & Watches">Watches</option>
+              <option value="Haute Couture & Leather">Designer fashion</option>
+              <option value="Architectural Home">Home goods</option>
+              <option value="Prestige Fragrance & Beauty">Fragrance</option>
+            </select>
+            <input type="text" class="search-input" name="q" placeholder="Search products, brands, or categories...">
+            <button type="submit" class="btn-search" aria-label="Search"><i class="bi bi-search"></i></button>
+          </form>
+        </div>
+        <div class="col-auto d-flex align-items-center gap-2 gap-sm-3">
+          <a href="shop.html" class="header-action-btn position-relative" title="Wishlist">
+            <i class="bi bi-heart"></i>
+            <span class="d-none d-lg-inline">Saved items</span>
+            <span class="header-action-badge wishlist-count-badge" style="display: none;">0</span>
+          </a>
+          <a href="account.html" class="d-flex align-items-center gap-2 text-decoration-none text-light ps-1" aria-label="Account">
+            <i class="bi bi-person-circle text-warning fs-4"></i>
+            <span class="d-none d-xl-inline account-link-label">Sign in</span>
+          </a>
+          <a href="/admin/login/?next=/admin-dashboard/" aria-label="Admin login" title="Admin login" class="admin-login-button"><i class="bi bi-shield-lock"></i><span>Admin login</span></a>
+          <a href="cart.html" class="header-action-btn open-cart-drawer position-relative" title="Shopping Bag">
+            <i class="bi bi-bag"></i>
+            <span class="d-none d-lg-inline">Bag</span>
+            <span class="header-action-badge cart-count-badge" style="display: none;">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Department Mega Ribbon -->
+  <nav class="dept-nav-ribbon" aria-label="Department navigation">
+    <div class="container-fluid max-w-1440">
+      <ul class="dept-nav-list">
+        <li class="dept-nav-item"><a href="shop.html" class="dept-nav-link active">All categories</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Electronics%20%26%20Hi-Fi" class="dept-nav-link">Electronics & Audio</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Fine%20Horology%20%26%20Watches" class="dept-nav-link">Watches</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Haute%20Couture%20%26%20Leather" class="dept-nav-link">Designer fashion & Leather</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Architectural%20Home" class="dept-nav-link">Home goods</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Prestige%20Fragrance%20%26%20Beauty" class="dept-nav-link">Fragrance</a></li>
+        <li class="dept-nav-item"><a href="#" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal" class="dept-nav-link text-warning-emphasis">Contact us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- SHOP MAIN CONTAINER -->
+  <main class="py-4 px-3" style="background: var(--ps-canvas);">
+    <div class="container-fluid max-w-1440">
+      
+      <!-- Breadcrumbs & Category Hero Header -->
+      <nav aria-label="breadcrumb" class="mb-2">
+        <ol class="breadcrumb small" style="font-size: 12px;">
+          <li class="breadcrumb-item"><a href="index.html" class="text-muted text-decoration-none">Home</a></li>
+          <li class="breadcrumb-item"><a href="shop.html" class="text-muted text-decoration-none">Product collection</a></li>
+          <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Products</li>
+        </ol>
+      </nav>
+
+      <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 pb-3 border-bottom gap-3">
+        <div>
+          <span class="section-pre-tag mb-1">Trusted products</span>
+          <h1 class="display-6 fw-bold mb-1" style="font-family: var(--ps-font-serif);">
+            Audio, watches, and designer products
+          </h1>
+          <p class="text-muted small mb-0" id="results-count-display">Loading products...</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <!-- View mode switcher -->
+          <div class="btn-group d-none d-md-inline-flex" role="group">
+            <button type="button" class="btn btn-outline-luxury btn-sm view-mode-btn active" data-view-mode="grid-4" title="4 Columns">
+              <i class="bi bi-grid-fill"></i>
+            </button>
+            <button type="button" class="btn btn-outline-luxury btn-sm view-mode-btn" data-view-mode="grid-3" title="3 Columns">
+              <i class="bi bi-grid-3x2-gap-fill"></i>
+            </button>
+            <button type="button" class="btn btn-outline-luxury btn-sm view-mode-btn" data-view-mode="list" title="List View">
+              <i class="bi bi-view-list"></i>
+            </button>
+          </div>
+
+          <!-- Sort Select -->
+          <div class="d-flex align-items-center gap-2">
+            <label for="shop-sort-select" class="small text-muted text-nowrap fw-semibold d-none d-sm-inline">Sort by:</label>
+            <select id="shop-sort-select" class="form-select form-select-sm border rounded-3 bg-white" style="width: auto; min-width: 170px;">
+              <option value="curated">Recommended</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+              <option value="reviews">Most Reviewed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE FILTER BADGES ROW -->
+      <div id="active-filter-badges-container" style="display: none;"></div>
+
+      <div class="row g-4">
+        
+        <!-- FILTER SIDEBAR (Desktop 3-column / Mobile Collapsible) -->
+        <aside class="col-lg-3">
+          <div class="card border rounded-4 p-4 bg-white shadow-sm sticky-top" style="top: 110px;">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+              <h5 class="fw-bold mb-0" style="font-family: var(--ps-font-serif); font-size: 17px;">
+                <i class="bi bi-sliders text-warning"></i> Filters
+              </h5>
+              <button type="button" class="btn btn-link btn-sm text-muted text-decoration-none p-0 small" id="clear-all-filters-btn">Reset</button>
+            </div>
+
+            <!-- Instant keyword search inside shop -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Keyword Search</label>
+              <div class="input-group input-group-sm">
+                <input type="text" id="filter-search-input" class="form-control" placeholder="Search titanium, focal, 512gb...">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+              </div>
+            </div>
+
+            <!-- Department Facet -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.05em;">Category</label>
+              <div class="d-flex flex-column gap-1.5">
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-dept-radio" type="radio" name="facet-dept" value="All" checked>
+                  <span class="form-check-label">All categories</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-dept-radio" type="radio" name="facet-dept" value="Electronics & Hi-Fi">
+                  <span class="form-check-label">Electronics and audio</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-dept-radio" type="radio" name="facet-dept" value="Fine Horology & Watches">
+                  <span class="form-check-label">Watches</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-dept-radio" type="radio" name="facet-dept" value="Haute Couture & Leather">
+                  <span class="form-check-label">Designer fashion</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-dept-radio" type="radio" name="facet-dept" value="Architectural Home">
+                  <span class="form-check-label">Home goods</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-dept-radio" type="radio" name="facet-dept" value="Prestige Fragrance & Beauty">
+                  <span class="form-check-label">Fragrance</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Price Range Dual Inputs -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.05em;">Price Range (INR)</label>
+              <form id="price-filter-form" class="row g-2 align-items-center">
+                <div class="col-5">
+                  <input type="number" id="price-min-input" class="form-control form-control-sm" placeholder="Min ₹">
+                </div>
+                <div class="col-2 text-center text-muted small">—</div>
+                <div class="col-5">
+                  <input type="number" id="price-max-input" class="form-control form-control-sm" placeholder="Max ₹">
+                </div>
+                <div class="col-12 mt-2">
+                  <button type="submit" class="btn btn-outline-luxury btn-sm w-100 py-1">Apply price filter</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Maison & Brand Checkboxes -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.05em;">Brand</label>
+              <div class="d-flex flex-column gap-1.5 overflow-auto pe-1" style="max-height: 180px;">
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Bang & Olufsen">
+                  <span class="form-check-label">Bang &amp; Olufsen</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Horizon Atelier">
+                  <span class="form-check-label">Horizon Atelier</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Focal">
+                  <span class="form-check-label">Focal (France)</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Devialet">
+                  <span class="form-check-label">Devialet</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Bowers & Wilkins">
+                  <span class="form-check-label">Bowers &amp; Wilkins</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Meze Audio">
+                  <span class="form-check-label">Meze Audio</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Sennheiser">
+                  <span class="form-check-label">Sennheiser</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Leica">
+                  <span class="form-check-label">Leica Optics</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Audemars Piguet">
+                  <span class="form-check-label">Audemars Piguet</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Herman Miller">
+                  <span class="form-check-label">Herman Miller</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-brand-check" type="checkbox" value="Diptyque Paris">
+                  <span class="form-check-label">Diptyque Paris</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Delivery Speed Facet -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.05em;">Delivery</label>
+              <div class="d-flex flex-column gap-1.5">
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-delivery-radio" type="radio" name="facet-delivery" value="All" checked>
+                  <span class="form-check-label">Any delivery speed</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-delivery-radio" type="radio" name="facet-delivery" value="Same-Day">
+                  <span class="form-check-label">Same-day delivery</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-delivery-radio" type="radio" name="facet-delivery" value="2-Day">
+                  <span class="form-check-label">Insured 2-day delivery</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Audio type Facet -->
+            <div class="mb-2">
+              <label class="form-label small fw-semibold text-uppercase mb-2" style="font-size: 11px; letter-spacing: 0.05em;">Audio type</label>
+              <div class="d-flex flex-column gap-1.5">
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-topology-check" type="checkbox" value="Open-Back">
+                  <span class="form-check-label">Open-back</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-topology-check" type="checkbox" value="Closed-Back">
+                  <span class="form-check-label">Closed-back</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-topology-check" type="checkbox" value="Planar">
+                  <span class="form-check-label">Planar magnetic</span>
+                </label>
+                <label class="form-check small cursor-pointer">
+                  <input class="form-check-input facet-topology-check" type="checkbox" value="Titanium">
+                  <span class="form-check-label">Titanium or beryllium driver</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </aside>
+
+        <!-- PRODUCT GRID & RESULTS COLUMN -->
+        <section class="col-lg-9">
+          
+          <!-- Dynamic Grid Injection Target -->
+          <div class="row g-4" id="shop-product-grid">
+            <!-- Rendered by js/shop.js -->
+          </div>
+
+          <!-- Pagination Container -->
+          <nav aria-label="Catalog pagination" class="mt-5 d-flex justify-content-center">
+            <ul class="pagination pagination-sm" id="shop-pagination-container">
+              <!-- Rendered by js/shop.js -->
+            </ul>
+          </nav>
+
+          <!-- Audio help banner -->
+          <div class="card border rounded-4 p-4 mt-5 bg-white shadow-sm border-warning border-opacity-50">
+            <div class="row align-items-center g-3">
+              <div class="col-md-8">
+                <span class="badge badge-atelier mb-2">Product advice</span>
+                <h4 class="fw-bold mb-1" style="font-family: var(--ps-font-serif);">Need help choosing?</h4>
+                <p class="text-muted small mb-0">Our experts can meet by video to help you choose speakers, headphones, or watches.</p>
+              </div>
+              <div class="col-md-4 text-md-end">
+                <button type="button" class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal">
+                  <i class="bi bi-chat-quote"></i> Book Private Session
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- MASTER LUXURY FOOTER -->
+  <footer class="proshop-footer">
+    <div class="container-fluid max-w-1440 px-3">
+      <div class="row g-4 g-lg-5 mb-5">
+        <div class="col-lg-4">
+          <a href="index.html" class="d-inline-block mb-3">
+            <img src="/static/assets/images/logo.svg" alt="ProShop" style="height: 44px;">
+          </a>
+          <p class="small text-secondary mb-3" style="color: #94A3B8 !important; line-height: 1.6;">
+            ProShop works with trusted brands and experts to bring you carefully chosen products.
+          </p>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <h5>Shop by category</h5>
+          <ul>
+            <li><a href="shop.html?dept=Electronics%20%26%20Hi-Fi">Electronics & Hi-Fi</a></li>
+            <li><a href="shop.html?dept=Fine%20Horology%20%26%20Watches">Watches</a></li>
+            <li><a href="shop.html?dept=Haute%20Couture%20%26%20Leather">Designer fashion</a></li>
+            <li><a href="shop.html?dept=Architectural%20Home">Home goods</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <h5>Customer service</h5>
+          <ul>
+            <li><a href="#" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal">Contact support</a></li>
+            <li><a href="cart.html">Shopping bag and checkout</a></li>
+            <li><a href="shop.html">Special offers</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4">
+          <h5>Our offices</h5>
+          <p class="small text-secondary mb-1"><strong>Manhattan:</strong> 740 Park Avenue Salon, Suite 12B</p>
+          <p class="small text-secondary mb-1"><strong>London:</strong> 14 Berkeley Square, Mayfair W1J</p>
+          <p class="small text-secondary mb-3"><strong>Geneva:</strong> Rue du Rhône 42, 1204 Genève</p>
+        </div>
+      </div>
+      <div class="footer-bottom-bar d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span class="text-secondary">© 2026 ProShop. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- ProShop JS Modules -->
+  <script src="/static/js/products-data.js"></script>
+  <script src="/static/js/store.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/shop.js"></script>
+</body>
+</html>

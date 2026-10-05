@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Bag &amp; Order details — ProShop Luxury Marketplace</title>
+  <meta name="description" content="Review your items, choose gift packaging, and place your order securely.">
+
+  <!-- Google Fonts: Playfair Display & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3.3 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Custom ProShop Master Stylesheet -->
+  <link href="/static/css/luxury-proshop.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Utility Bar -->
+  <div class="top-utility-bar py-1.5 px-3">
+    <div class="container-fluid max-w-1440 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <span class="concierge-badge"><i class="bi bi-patch-check-fill"></i> Shop ProShop</span>
+        <span class="d-none d-md-inline text-secondary">Secure delivery in India and worldwide</span>
+      </div>
+      <div class="d-flex align-items-center gap-4">
+        <a href="#" aria-label="Customer support" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal"><i class="bi bi-headset text-warning"></i> Customer support</a>
+        <a href="shop.html" class="d-none d-sm-inline">Shop</a>
+        <span class="text-white-50">INR (₹)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="proshop-header py-2.5 px-3">
+    <div class="container-fluid max-w-1440">
+      <div class="row store-header-row align-items-center g-2 g-md-4">
+        <div class="col-auto">
+          <a href="index.html" class="brand-logo-container" aria-label="ProShop Home">
+            <img src="/static/assets/images/logo.svg" alt="ProShop Logo">
+          </a>
+        </div>
+        <div class="col flex-grow-1">
+          <form id="global-search-form" class="global-search-wrapper" action="shop.html" method="GET">
+            <select class="dept-select d-none d-lg-block" name="dept">
+              <option value="All">All categories</option>
+              <option value="Electronics & Hi-Fi">Electronics & Hi-Fi</option>
+              <option value="Fine Horology & Watches">Watches</option>
+              <option value="Haute Couture & Leather">Designer fashion</option>
+              <option value="Architectural Home">Home goods</option>
+              <option value="Prestige Fragrance & Beauty">Fragrance</option>
+            </select>
+            <input type="text" class="search-input" name="q" placeholder="Search products, brands, or categories...">
+            <button type="submit" class="btn-search" aria-label="Search"><i class="bi bi-search"></i></button>
+          </form>
+        </div>
+        <div class="col-auto d-flex align-items-center gap-2 gap-sm-3">
+          <a href="shop.html" class="header-action-btn position-relative" title="Wishlist">
+            <i class="bi bi-heart"></i>
+            <span class="d-none d-lg-inline">Saved items</span>
+            <span class="header-action-badge wishlist-count-badge" style="display: none;">0</span>
+          </a>
+          <a href="account.html" class="d-flex align-items-center gap-2 text-decoration-none text-light ps-1" aria-label="Account">
+            <i class="bi bi-person-circle text-warning fs-4"></i>
+            <span class="d-none d-xl-inline account-link-label">Sign in</span>
+          </a>
+          <a href="/admin/login/?next=/admin-dashboard/" aria-label="Admin login" title="Admin login" class="admin-login-button"><i class="bi bi-shield-lock"></i><span>Admin login</span></a>
+          <a href="cart.html" class="header-action-btn open-cart-drawer position-relative" title="Shopping Bag">
+            <i class="bi bi-bag"></i>
+            <span class="d-none d-lg-inline">Bag</span>
+            <span class="header-action-badge cart-count-badge" style="display: none;">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Department Mega Ribbon -->
+  <nav class="dept-nav-ribbon" aria-label="Department navigation">
+    <div class="container-fluid max-w-1440">
+      <ul class="dept-nav-list">
+        <li class="dept-nav-item"><a href="shop.html" class="dept-nav-link">All categories</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Electronics%20%26%20Hi-Fi" class="dept-nav-link">Electronics & Audio</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Fine%20Horology%20%26%20Watches" class="dept-nav-link">Watches</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Haute%20Couture%20%26%20Leather" class="dept-nav-link">Designer fashion & Leather</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Architectural%20Home" class="dept-nav-link">Home goods</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Prestige%20Fragrance%20%26%20Beauty" class="dept-nav-link">Fragrance</a></li>
+        <li class="dept-nav-item"><a href="#" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal" class="dept-nav-link text-warning-emphasis">Contact us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- CART MAIN CONTENT -->
+  <main class="py-5 px-3" style="background: var(--ps-canvas);">
+    <div class="container-fluid max-w-1440">
+      
+      <!-- Page Header -->
+      <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 pb-3 border-bottom gap-2">
+        <div>
+          <span class="section-pre-tag mb-1">Your order</span>
+          <h1 class="display-6 fw-bold mb-0" style="font-family: var(--ps-font-serif);">Shopping Bag</h1>
+        </div>
+        <span class="badge badge-atelier px-3 py-2" id="cart-items-count-header" style="font-size: 12px;">3 Items</span>
+      </div>
+
+      <div class="row g-4 g-xl-5">
+
+        <!-- LEFT COLUMN: BAG ITEMS & SAVED FOR LATER (8 Cols) -->
+        <div class="col-lg-8">
+          
+          <!-- Bag Items Target -->
+          <div id="cart-items-container">
+            <!-- Rendered by js/cart.js -->
+          </div>
+
+          <!-- SAVED FOR LATER SECTION -->
+          <div id="saved-for-later-section" class="mt-5 pt-4 border-top">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <i class="bi bi-bookmark text-warning"></i>
+              <h4 class="fw-bold mb-0" style="font-family: var(--ps-font-serif);">Saved for later</h4>
+            </div>
+            <div class="row g-3" id="saved-items-container">
+              <!-- Rendered by js/cart.js -->
+            </div>
+          </div>
+
+          <!-- FREQUENTLY PAIRED WITH YOUR SELECTION -->
+          <div class="mt-5 pt-4 border-top">
+            <div class="d-flex justify-content-between align-items-end mb-3">
+              <div>
+                <span class="section-pre-tag">Accessories</span>
+                <h4 class="fw-bold mb-0" style="font-family: var(--ps-font-serif);">Often bought with this item</h4>
+              </div>
+            </div>
+            <div class="row g-3" id="cart-upsell-items">
+              <!-- Rendered by js/cart.js -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: ORDER SUMMARY CARD (4 Cols) -->
+        <div class="col-lg-4">
+          <div class="cart-order-summary-card">
+            
+            <h4 class="fw-bold mb-3 pb-2 border-bottom" style="font-family: var(--ps-font-serif);">Order details</h4>
+
+            <div class="order-summary-row">
+              <span>Items Subtotal:</span>
+              <strong class="text-dark" id="summary-subtotal">₹0</strong>
+            </div>
+
+            <div class="order-summary-row">
+              <span>Insured delivery:</span>
+              <span id="summary-shipping" class="text-success fw-semibold">Free</span>
+            </div>
+
+            <!-- Gift Packaging Toggle -->
+            <div class="p-2.5 rounded bg-light border my-3">
+              <div class="form-check mb-0">
+                <input class="form-check-input" type="checkbox" id="gift-packaging-checkbox">
+                <label class="form-check-label small" for="gift-packaging-checkbox">
+                  <strong class="text-dark">Gift packaging</strong>
+                  <span class="d-block text-muted" style="font-size: 11px;">Gift box included on orders over ₹96,150.</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="order-summary-row">
+              <span>Authenticity certificate:</span>
+              <span class="text-success fw-semibold">Included</span>
+            </div>
+
+            <div class="order-summary-row" id="summary-discount-row" style="display: none;">
+              <span class="text-success">Special discount:</span>
+              <strong class="text-success" id="summary-discount">-₹0</strong>
+            </div>
+
+            <div class="order-summary-row">
+              <span>Estimated tax (8.25%):</span>
+              <span class="text-dark" id="summary-tax">₹0</span>
+            </div>
+
+            <div class="order-summary-row total-row">
+              <span>Estimated total:</span>
+              <span class="text-dark" id="summary-total">₹0</span>
+            </div>
+
+            <!-- Promo Code Form -->
+            <div class="my-3 pt-3 border-top">
+              <label class="form-label small fw-semibold text-uppercase" style="font-size: 11px; letter-spacing: 0.05em;">Discount code</label>
+              <form id="promo-code-form" class="input-group input-group-sm mb-2">
+                <input type="text" id="promo-code-input" class="form-control" placeholder="Try AUTUMN2025 or VIPNOIR">
+                <button type="submit" class="btn btn-navy">Apply</button>
+              </form>
+              <div id="promo-status-msg"></div>
+            </div>
+
+            <!-- Checkout Buttons -->
+            <div class="d-grid gap-2 mb-3">
+              <button type="button" class="btn btn-gold py-2.5 fw-bold" id="btn-proceed-checkout">
+                <i class="bi bi-lock-fill"></i> Continue to checkout
+              </button>
+
+              <p class="small text-muted text-center mb-0">Pay securely in Indian rupees using Razorpay.</p>
+            </div>
+
+            <!-- Trust Protocol Badges -->
+            <div class="pt-3 border-top text-muted small">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-shield-lock-fill text-warning"></i>
+                <span style="font-size: 11.5px;">Secure account access</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-box-seam text-warning"></i>
+                <span style="font-size: 11.5px;">Packed in secure packaging</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-arrow-counterclockwise text-warning"></i>
+                <span style="font-size: 11.5px;">Free 30-day returns</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- MASTER LUXURY FOOTER -->
+  <footer class="proshop-footer">
+    <div class="container-fluid max-w-1440 px-3">
+      <div class="row g-4 g-lg-5 mb-5">
+        <div class="col-lg-4">
+          <a href="index.html" class="d-inline-block mb-3">
+            <img src="/static/assets/images/logo.svg" alt="ProShop" style="height: 44px;">
+          </a>
+          <p class="small text-secondary mb-3" style="color: #94A3B8 !important; line-height: 1.6;">
+            ProShop works with trusted brands and experts to bring you carefully chosen products.
+          </p>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <h5>Shop by category</h5>
+          <ul>
+            <li><a href="shop.html?dept=Electronics%20%26%20Hi-Fi">Electronics & Hi-Fi</a></li>
+            <li><a href="shop.html?dept=Fine%20Horology%20%26%20Watches">Watches</a></li>
+            <li><a href="shop.html?dept=Haute%20Couture%20%26%20Leather">Designer fashion</a></li>
+            <li><a href="shop.html?dept=Architectural%20Home">Home goods</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <h5>Customer service</h5>
+          <ul>
+            <li><a href="#" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal">Contact support</a></li>
+            <li><a href="cart.html">Shopping bag and checkout</a></li>
+            <li><a href="shop.html">Special offers</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4">
+          <h5>Our offices</h5>
+          <p class="small text-secondary mb-1"><strong>Manhattan:</strong> 740 Park Avenue Salon, Suite 12B</p>
+          <p class="small text-secondary mb-1"><strong>London:</strong> 14 Berkeley Square, Mayfair W1J</p>
+          <p class="small text-secondary mb-3"><strong>Geneva:</strong> Rue du Rhône 42, 1204 Genève</p>
+        </div>
+      </div>
+      <div class="footer-bottom-bar d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span class="text-secondary">© 2026 ProShop. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+
+  <!-- ProShop JS Modules -->
+  <script src="/static/js/products-data.js"></script>
+  <script src="/static/js/store.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/cart.js"></script>
+</body>
+</html>

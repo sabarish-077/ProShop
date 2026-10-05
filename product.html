@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details — ProShop Luxury Marketplace</title>
+  <meta name="description" content="Well-made products from trusted brands, checked by our experts and shipped with insurance.">
+
+  <!-- Google Fonts: Playfair Display & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3.3 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Custom ProShop Master Stylesheet -->
+  <link href="/static/css/luxury-proshop.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Utility Bar -->
+  <div class="top-utility-bar py-1.5 px-3">
+    <div class="container-fluid max-w-1440 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <span class="concierge-badge"><i class="bi bi-patch-check-fill"></i> Shop ProShop</span>
+        <span class="d-none d-md-inline text-secondary">Secure delivery in India and worldwide</span>
+      </div>
+      <div class="d-flex align-items-center gap-4">
+        <a href="#" aria-label="Customer support" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal"><i class="bi bi-headset text-warning"></i> Customer support</a>
+        <a href="shop.html" class="d-none d-sm-inline">Shop</a>
+        <span class="text-white-50">INR (₹)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="proshop-header py-2.5 px-3">
+    <div class="container-fluid max-w-1440">
+      <div class="row store-header-row align-items-center g-2 g-md-4">
+        <div class="col-auto">
+          <a href="index.html" class="brand-logo-container" aria-label="ProShop Home">
+            <img src="/static/assets/images/logo.svg" alt="ProShop Logo">
+          </a>
+        </div>
+        <div class="col flex-grow-1">
+          <form id="global-search-form" class="global-search-wrapper" action="shop.html" method="GET">
+            <select class="dept-select d-none d-lg-block" name="dept">
+              <option value="All">All categories</option>
+              <option value="Electronics & Hi-Fi">Electronics & Hi-Fi</option>
+              <option value="Fine Horology & Watches">Watches</option>
+              <option value="Haute Couture & Leather">Designer fashion</option>
+              <option value="Architectural Home">Home goods</option>
+              <option value="Prestige Fragrance & Beauty">Fragrance</option>
+            </select>
+            <input type="text" class="search-input" name="q" placeholder="Search products, brands, or categories...">
+            <button type="submit" class="btn-search" aria-label="Search"><i class="bi bi-search"></i></button>
+          </form>
+        </div>
+        <div class="col-auto d-flex align-items-center gap-2 gap-sm-3">
+          <a href="shop.html" class="header-action-btn position-relative" title="Wishlist">
+            <i class="bi bi-heart"></i>
+            <span class="d-none d-lg-inline">Saved items</span>
+            <span class="header-action-badge wishlist-count-badge" style="display: none;">0</span>
+          </a>
+          <a href="account.html" class="d-flex align-items-center gap-2 text-decoration-none text-light ps-1" aria-label="Account">
+            <i class="bi bi-person-circle text-warning fs-4"></i>
+            <span class="d-none d-xl-inline account-link-label">Sign in</span>
+          </a>
+          <a href="/admin/login/?next=/admin-dashboard/" aria-label="Admin login" title="Admin login" class="admin-login-button"><i class="bi bi-shield-lock"></i><span>Admin login</span></a>
+          <a href="cart.html" class="header-action-btn open-cart-drawer position-relative" title="Shopping Bag">
+            <i class="bi bi-bag"></i>
+            <span class="d-none d-lg-inline">Bag</span>
+            <span class="header-action-badge cart-count-badge" style="display: none;">0</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Department Mega Ribbon -->
+  <nav class="dept-nav-ribbon" aria-label="Department navigation">
+    <div class="container-fluid max-w-1440">
+      <ul class="dept-nav-list">
+        <li class="dept-nav-item"><a href="shop.html" class="dept-nav-link">All categories</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Electronics%20%26%20Hi-Fi" class="dept-nav-link">Electronics & Audio</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Fine%20Horology%20%26%20Watches" class="dept-nav-link">Watches</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Haute%20Couture%20%26%20Leather" class="dept-nav-link">Designer fashion & Leather</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Architectural%20Home" class="dept-nav-link">Home goods</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Prestige%20Fragrance%20%26%20Beauty" class="dept-nav-link">Fragrance</a></li>
+        <li class="dept-nav-item"><a href="#" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal" class="dept-nav-link text-warning-emphasis">Contact us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- PDP MAIN CONTENT -->
+  <main class="py-4 px-3" style="background: var(--ps-canvas);">
+    <div class="container-fluid max-w-1440">
+      
+      <!-- Breadcrumbs -->
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small" style="font-size: 12px;">
+          <li class="breadcrumb-item"><a href="index.html" class="text-muted text-decoration-none">Home</a></li>
+          <li class="breadcrumb-item"><a href="shop.html" id="pdp-breadcrumb-dept" class="text-muted text-decoration-none">Electronics &amp; Hi-Fi</a></li>
+          <li class="breadcrumb-item active text-dark fw-semibold" id="pdp-breadcrumb-title" aria-current="page">Horizon X Titanium Ultra</li>
+        </ol>
+      </nav>
+
+      <!-- 3-COLUMN FLAGSHIP ARCHITECTURE -->
+      <div class="row g-4 g-xl-5">
+
+        <!-- COLUMN 1: STICKY GALLERY (Left) -->
+        <div class="col-lg-4">
+          <div class="pdp-sticky-gallery">
+            <div class="gallery-main-view">
+              <img id="pdp-main-image" src="" alt="Product image">
+              <span class="badge badge-atelier position-absolute top-0 start-0 m-3" id="pdp-badge-tag">Limited offer</span>
+            </div>
+
+            <!-- Thumbnail row -->
+            <div class="gallery-thumbs-row" id="pdp-gallery-thumbs">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Atelier Certificate Seal -->
+            <div class="card border rounded-4 p-3 mt-4 bg-white shadow-sm">
+              <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center justify-content-center rounded-circle bg-dark text-warning fs-5" style="width: 44px; height: 44px; flex-shrink: 0;">
+                  <i class="bi bi-award"></i>
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-0" style="font-family: var(--ps-font-serif); font-size: 14px;">Authenticity certificate</h6>
+                  <p class="text-muted small mb-0" style="font-size: 11px;">Checked by our experts in Geneva and Wetzlar. Includes a unique certificate.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMN 2: EDITORIAL NARRATIVE & DETAILS (Middle) -->
+        <div class="col-lg-5">
+          <div class="pdp-narrative-column">
+            
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="card-brand-tag" id="pdp-brand-tag">Horizon Atelier</span>
+              <span class="text-muted small">•</span>
+              <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5" style="font-size: 10px;">Finished by hand in Switzerland</span>
+            </div>
+
+            <h1 class="pdp-product-title" id="pdp-product-title">Horizon X Titanium Ultra (512GB) – Obsidian Black Edition</h1>
+            
+            <p class="pdp-subtitle" id="pdp-subtitle">Forged in Grade 5 Titanium. Polished by Master Horologists.</p>
+
+            <div class="d-flex align-items-center gap-2 mb-3 pb-3 border-bottom">
+              <span class="stars-gold">★★★★★</span>
+              <a href="#pdp-reviews-tab" class="text-muted small text-decoration-none" id="pdp-reviews-count">(128 customer reviews)</a>
+              <span class="text-muted small ms-auto d-none d-sm-inline"><i class="bi bi-patch-check-fill text-warning"></i> Authenticity Guaranteed</span>
+            </div>
+
+            <!-- Product Overview Narrative -->
+            <p class="text-secondary small mb-4" id="pdp-description-text" style="line-height: 1.7; font-size: 14px;">
+              An uncompromising intersection of high horology finishing and state-of-the-art mobile computing. Machined from single-billet aerospace Grade 5 titanium, hand-chamfered by master artisans in Geneva, and engineered with an authentic 1-inch sensor optical array tuned in partnership with heritage lens houses.
+            </p>
+
+            <!-- Highlights -->
+            <div class="card border rounded-4 p-3.5 mb-4 bg-white shadow-sm">
+              <h6 class="fw-bold mb-2.5" style="font-family: var(--ps-font-serif); font-size: 14px;">Key features</h6>
+              <ul class="list-unstyled mb-0" id="pdp-highlights-list">
+                <!-- Rendered dynamically -->
+              </ul>
+            </div>
+
+            <!-- Frequently Bought Together Bundle -->
+            <div id="pdp-bundle-container" class="mb-4">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- LUXURY TABS CONTAINER -->
+            <div class="card border rounded-4 p-4 bg-white shadow-sm mt-4">
+              <ul class="nav nav-tabs luxury-tabs mb-3 border-bottom" role="tablist">
+                <li class="nav-item">
+                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-specs" role="tab">Specifications</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-box" role="tab">What is included</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-reviews" role="tab" id="pdp-reviews-tab">Customer reviews</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-concierge" role="tab">Questions and answers</button>
+                </li>
+              </ul>
+
+              <div class="tab-content pt-2">
+                <!-- Tab 1: Specs -->
+                <div class="tab-pane fade show active" id="tab-specs" role="tabpanel">
+                  <table class="table table-sm mb-0">
+                    <tbody id="pdp-specs-table">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Tab 2: In Box -->
+                <div class="tab-pane fade" id="tab-box" role="tabpanel">
+                  <div class="row g-2" id="pdp-in-box-list">
+                    <!-- Rendered dynamically -->
+                  </div>
+                </div>
+
+                <!-- Tab 3: Reviews -->
+                <div class="tab-pane fade" id="tab-reviews" role="tabpanel">
+                  <div class="d-flex align-items-center gap-4 mb-4 p-3 rounded bg-light border">
+                    <div>
+                      <div class="display-6 fw-bold text-dark">4.9</div>
+                      <div class="stars-gold">★★★★★</div>
+                      <span class="text-muted small">128 verified reviews</span>
+                    </div>
+                    <div class="flex-grow-1 ps-3 border-start">
+                      <div class="d-flex align-items-center gap-2 mb-1 small">
+                        <span>5 Stars</span>
+                        <div class="progress flex-grow-1" style="height: 6px;"><div class="progress-bar bg-warning" style="width: 92%;"></div></div>
+                        <span class="text-muted">92%</span>
+                      </div>
+                      <div class="d-flex align-items-center gap-2 small">
+                        <span>4 Stars</span>
+                        <div class="progress flex-grow-1" style="height: 6px;"><div class="progress-bar bg-warning" style="width: 8%;"></div></div>
+                        <span class="text-muted">8%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Sample Reviews -->
+                  <div class="border-bottom pb-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <strong class="text-dark small">Julian S. — Mayfair, London</strong>
+                      <span class="text-muted small">September 24, 2026</span>
+                    </div>
+                    <div class="stars-gold mb-1" style="font-size: 11px;">★★★★★</div>
+                    <p class="text-secondary small mb-0 font-serif fst-italic">"Surpasses my mechanical Leica M11 in everyday fluid usability. The titanium chamfering is executed at Patek-level standards."</p>
+                  </div>
+
+                  <div class="pb-2">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <strong class="text-dark small">Victoria C. — Zurich</strong>
+                      <span class="text-muted small">September 14, 2026</span>
+                    </div>
+                    <div class="stars-gold mb-1" style="font-size: 11px;">★★★★★</div>
+                    <p class="text-secondary small mb-0 font-serif fst-italic">"Beautiful design and a great feel. Secure delivery arrived in 3 hours."</p>
+                  </div>
+                </div>
+
+                <!-- Tab 4: Q&A -->
+                <div class="tab-pane fade" id="tab-concierge" role="tabpanel">
+                  <p class="text-muted small mb-3">Need help with audio setup, watch servicing, or engraving?</p>
+                  <button type="button" class="btn btn-outline-gold btn-sm" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal">
+                    <i class="bi bi-chat-quote"></i> Ask our team
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- COLUMN 3: STICKY BUY BOX (Right) -->
+        <div class="col-lg-3">
+          <div class="pdp-sticky-buybox">
+            
+            <!-- Price Display -->
+            <div class="mb-3">
+              <span class="text-muted small d-block">Price</span>
+              <div class="d-flex align-items-baseline gap-2">
+                <span class="pdp-buybox-price" id="pdp-display-price">₹2,78,739</span>
+                <span class="price-original" id="pdp-original-price" style="display: none;">₹3,07,680</span>
+              </div>
+              <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 mt-1" style="font-size: 10px;">
+                Delivery included
+              </span>
+            </div>
+
+            <!-- Finish Swatches -->
+            <div class="variant-section-row mb-3 pb-3 border-bottom">
+              <label class="d-block small text-muted mb-1 fw-semibold">
+                Finish: <strong class="text-dark" id="pdp-selected-finish-name">Obsidian Black</strong>
+              </label>
+              <div class="variant-swatch-group" id="pdp-finishes-container">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Capacity Pills -->
+            <div class="variant-section-row mb-4 pb-3 border-bottom">
+              <label class="d-block small text-muted mb-1 fw-semibold">Size or details:</label>
+              <div class="d-flex flex-wrap gap-2" id="pdp-capacities-container">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Quantity Selector & Action Buttons -->
+            <div class="mb-4">
+              <label class="d-block small text-muted mb-1 fw-semibold">Quantity:</label>
+              <div class="qty-counter-group mb-3">
+                <button type="button" class="qty-counter-btn" id="pdp-qty-minus">−</button>
+                <input type="text" class="qty-counter-input" id="pdp-qty-input" value="1" readonly>
+                <button type="button" class="qty-counter-btn" id="pdp-qty-plus">+</button>
+              </div>
+
+              <div class="d-grid gap-2">
+                <button type="button" class="btn btn-gold py-2.5" id="pdp-add-to-bag-btn">
+                  <i class="bi bi-bag-plus"></i> Add to Shopping Bag
+                </button>
+                
+                <button type="button" class="btn btn-navy py-2.5" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal">
+                  <i class="bi bi-shield-lock"></i> Buy now with expert help
+                </button>
+
+                <button type="button" class="btn btn-outline-luxury py-2" id="pdp-wishlist-toggle">
+                  <i class="bi bi-heart"></i> Save to Private Saved items
+                </button>
+              </div>
+            </div>
+
+            <!-- Guarantee Badges -->
+            <div class="pt-3 border-top small text-muted">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-truck text-warning"></i>
+                <span style="font-size: 11.5px;">Order in <strong>2h : 14m</strong> for same-day delivery in Manhattan</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-shield-check text-warning"></i>
+                <span style="font-size: 11.5px;">Official 3-year warranty</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-arrow-repeat text-warning"></i>
+                <span style="font-size: 11.5px;">Free 30-day returns</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SIMILAR FLAGSHIP RECOMMENDATIONS -->
+      <section class="mt-5 pt-5 border-top">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+          <div>
+            <span class="section-pre-tag">You may also like</span>
+            <h2 class="section-main-title mb-0">Similar products</h2>
+          </div>
+          <a href="shop.html" class="btn btn-outline-luxury btn-sm">Explore More »</a>
+        </div>
+        <div class="row g-4" id="pdp-similar-products">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- MASTER LUXURY FOOTER -->
+  <footer class="proshop-footer">
+    <div class="container-fluid max-w-1440 px-3">
+      <div class="row g-4 g-lg-5 mb-5">
+        <div class="col-lg-4">
+          <a href="index.html" class="d-inline-block mb-3">
+            <img src="/static/assets/images/logo.svg" alt="ProShop" style="height: 44px;">
+          </a>
+          <p class="small text-secondary mb-3" style="color: #94A3B8 !important; line-height: 1.6;">
+            ProShop works with trusted brands and experts to bring you carefully chosen products.
+          </p>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <h5>Shop by category</h5>
+          <ul>
+            <li><a href="shop.html?dept=Electronics%20%26%20Hi-Fi">Electronics & Hi-Fi</a></li>
+            <li><a href="shop.html?dept=Fine%20Horology%20%26%20Watches">Watches</a></li>
+            <li><a href="shop.html?dept=Haute%20Couture%20%26%20Leather">Designer fashion</a></li>
+            <li><a href="shop.html?dept=Architectural%20Home">Home goods</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+          <h5>Customer service</h5>
+          <ul>
+            <li><a href="#" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal">Contact support</a></li>
+            <li><a href="cart.html">Shopping bag and checkout</a></li>
+            <li><a href="shop.html">Special offers</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4">
+          <h5>Our offices</h5>
+          <p class="small text-secondary mb-1"><strong>Manhattan:</strong> 740 Park Avenue Salon, Suite 12B</p>
+          <p class="small text-secondary mb-1"><strong>London:</strong> 14 Berkeley Square, Mayfair W1J</p>
+          <p class="small text-secondary mb-3"><strong>Geneva:</strong> Rue du Rhône 42, 1204 Genève</p>
+        </div>
+      </div>
+      <div class="footer-bottom-bar d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span class="text-secondary">© 2026 ProShop. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- ProShop JS Modules -->
+  <script src="/static/js/products-data.js"></script>
+  <script src="/static/js/store.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/product.js"></script>
+</body>
+</html>

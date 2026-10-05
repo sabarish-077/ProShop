@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProShop — Luxury products</title>
+  <meta name="description" content="Masterful craftsmanship across high-fidelity audio, haute horology, designer atelier fashion, and architectural home sanctuaries.">
+  
+  <!-- Google Fonts: Playfair Display (Curatorial Editorial Voice) & Inter (Precision Typography) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Custom ProShop Master Luxury Stylesheet -->
+  <link href="/static/css/luxury-proshop.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Utility Bar -->
+  <div class="top-utility-bar py-1.5 px-3">
+    <div class="container-fluid max-w-1440 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <span class="concierge-badge">
+          <i class="bi bi-patch-check-fill"></i> Shop ProShop
+        </span>
+        <span class="d-none d-md-inline text-secondary">Secure delivery in India and worldwide</span>
+      </div>
+      <div class="d-flex align-items-center gap-4">
+        <a href="#" aria-label="Customer support" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal" class="d-inline-flex align-items-center gap-1">
+          <i class="bi bi-headset text-warning"></i> Customer support
+        </a>
+        <a href="shop.html" class="d-none d-sm-inline">Shop</a>
+        <span class="text-white-50">INR (₹)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="proshop-header py-2.5 px-3">
+    <div class="container-fluid max-w-1440">
+      <div class="row store-header-row align-items-center g-2 g-md-4">
+        
+        <!-- Logo -->
+        <div class="col-auto">
+          <a href="index.html" class="brand-logo-container" aria-label="ProShop Home">
+            <img src="/static/assets/images/logo.svg" alt="ProShop marketplace">
+          </a>
+        </div>
+
+        <!-- Global Search Bar -->
+        <div class="col flex-grow-1">
+          <form id="global-search-form" class="global-search-wrapper" action="shop.html" method="GET">
+            <select class="dept-select d-none d-lg-block" name="dept" aria-label="Department selector">
+              <option value="All">All categories</option>
+              <option value="Electronics & Hi-Fi">Electronics & Hi-Fi</option>
+              <option value="Fine Horology & Watches">Watches</option>
+              <option value="Haute Couture & Leather">Designer fashion</option>
+              <option value="Architectural Home">Home goods</option>
+              <option value="Prestige Fragrance & Beauty">Fragrance</option>
+            </select>
+            <input type="text" class="search-input" name="q" placeholder="Search products, brands, or categories..." aria-label="Search items">
+            <button type="submit" class="btn-search" aria-label="Perform search">
+              <i class="bi bi-search"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Utility Actions: Wishlist, Profile, Bag -->
+        <div class="col-auto d-flex align-items-center gap-2 gap-sm-3">
+          <!-- Wishlist -->
+          <a href="shop.html" class="header-action-btn position-relative" title="Saved items">
+            <i class="bi bi-heart"></i>
+            <span class="d-none d-lg-inline">Saved items</span>
+            <span class="header-action-badge wishlist-count-badge" style="display: none;">0</span>
+          </a>
+
+          <!-- Account -->
+          <a href="account.html" class="d-flex align-items-center gap-2 text-decoration-none text-light ps-1" aria-label="Account">
+            <i class="bi bi-person-circle text-warning fs-4"></i>
+            <span class="d-none d-xl-inline account-link-label">Sign in</span>
+          </a>
+          <a href="/admin/login/?next=/admin-dashboard/" aria-label="Admin login" title="Admin login" class="admin-login-button"><i class="bi bi-shield-lock"></i><span>Admin login</span></a>
+
+          <!-- Shopping Bag Trigger -->
+          <a href="cart.html" class="header-action-btn open-cart-drawer position-relative" title="Shopping Bag">
+            <i class="bi bi-bag"></i>
+            <span class="d-none d-lg-inline">Bag</span>
+            <span class="header-action-badge cart-count-badge" style="display: none;">0</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Department Mega Ribbon -->
+  <nav class="dept-nav-ribbon" aria-label="Department navigation">
+    <div class="container-fluid max-w-1440">
+      <ul class="dept-nav-list">
+        <li class="dept-nav-item"><a href="shop.html" class="dept-nav-link active">All categories</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Electronics%20%26%20Hi-Fi" class="dept-nav-link">Electronics & Audio</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Fine%20Horology%20%26%20Watches" class="dept-nav-link">Watches</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Haute%20Couture%20%26%20Leather" class="dept-nav-link">Designer fashion & Leather</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Architectural%20Home" class="dept-nav-link">Home goods</a></li>
+        <li class="dept-nav-item"><a href="shop.html?dept=Prestige%20Fragrance%20%26%20Beauty" class="dept-nav-link">Fragrance</a></li>
+        <li class="dept-nav-item"><a href="shop.html" class="dept-nav-link gold-deal"><i class="bi bi-lightning-charge-fill"></i> Special offers</a></li>
+        <li class="dept-nav-item"><a href="#" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal" class="dept-nav-link text-warning-emphasis">ProShop membership</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main>
+
+    <!-- SECTION 1: HERO EDITORIAL BANNER -->
+    <section class="hero-editorial-section py-5 px-3">
+      <div class="container-fluid max-w-1440 py-lg-4">
+        <div class="row align-items-center g-4 g-lg-5">
+          <div class="col-lg-7">
+            <span class="hero-lead-tag">
+              <i class="bi bi-gem"></i> Our collection • 2026
+            </span>
+            <h1 class="hero-headline">
+              Quality products in tech, fashion, and watches.
+            </h1>
+            <p class="hero-description">
+              We work with trusted European brands. Experts check every item and provide a certificate. All orders are shipped with insurance.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+              <a href="shop.html" class="btn btn-gold px-4 py-2.5">
+                <i class="bi bi-compass"></i> Shop now
+              </a>
+              <a href="product.html?id=horizon-x" class="btn btn-outline-gold px-4 py-2.5">
+                View Horizon X »
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="hero-highlight-box">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge badge-atelier">Featured offer</span>
+                <span class="text-warning small fw-semibold">Only 2 left</span>
+              </div>
+              <div class="position-relative overflow-hidden rounded-3 mb-3">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvwSIZiSOfvFBNYj_HHWK05gY9rnpjYI0-S5ndKqF0YLKTDL5rnNQSohEq_VGeoWvm4pmuuMB-5vp8IFDgcsHAJZMc9Bq73lvraj-I8SE0f_y95_nR7eBVl_T_--7kdOdKKsq_oF00IT1qV2SX7iSCfVND-czH-VTVImL5-YE8iRJu-PagDgKEHJNwmjJVb0CuI3VRfSUw6BlpZotTnbfG_s_KsFD9jvDMQXPjthRYDNTiy_DCNHML4A" alt="Bang & Olufsen Beosound Theatre" class="w-100 object-fit-cover" style="height: 260px;">
+              </div>
+              <h3 class="fs-4 text-white mb-1" style="font-family: var(--ps-font-serif);">Bang &amp; Olufsen Beosound Theatre</h3>
+              <p class="text-secondary small mb-3">Powerful home sound in a sleek design, made with oak and gold-tone aluminum.</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fs-4 fw-bold text-white">₹7,88,334</span>
+                <a href="product.html?id=beosound-theatre" class="btn btn-gold btn-sm px-3 py-2">Buy now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: SHOP BY CURATED DEPARTMENT -->
+    <section class="py-5 px-3" style="background: var(--ps-canvas);">
+      <div class="container-fluid max-w-1440">
+        <div class="section-title-wrap text-center mb-4">
+          <span class="section-pre-tag">Our collections</span>
+          <h2 class="section-main-title">Shop by category</h2>
+          <p class="text-muted small mx-auto max-w-md">We choose quality products for their materials, performance, and lasting design.</p>
+        </div>
+
+        <div class="row g-3 g-md-4 row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 justify-content-center">
+          <!-- Dept 1 -->
+          <div class="col">
+            <a href="shop.html?dept=Electronics%20%26%20Hi-Fi" class="dept-pill-card">
+              <div class="dept-image-disc">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwDwbGUozAyA_jeGYAEvh3kc8wREmMqK43IVqW0-O-aY0iW-JStWEED5bLQiecWJxiWRWiHMnVa6KQmT0zsIpJbrbdYfcuDSV7oXkyMbCQBNfvNB6gEiufDf6K8FGSPdM0eIjY2oi0URt39MeM0Ltg055p9Y3Fq5roHoKUSEe_9rgQt0u_XruHejw_OfH3IdZQXe2intcKujJuLgnJ1Jf6650QZpuGRRZMkaHHFefRY-hv8y4dQT5OdA" alt="Electronics & Hi-Fi">
+              </div>
+              <span class="dept-pill-title">Electronics and audio</span>
+              <span class="dept-pill-count">142 products</span>
+            </a>
+          </div>
+
+          <!-- Dept 2 -->
+          <div class="col">
+            <a href="shop.html?dept=Fine%20Horology%20%26%20Watches" class="dept-pill-card">
+              <div class="dept-image-disc">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuABoHQRCzxLyKzf2jaIUixmAvpiRolvIGH8MJZOI0ECw6LU4gOCAD7ouNQS8IGDqHMmZPSGwV1TpW2kqWBs8oad74s1O40F3t4P7a5TnhsIUXBZtGQ0_YOhHeSIWyHCD-3U6MLh_L29xpu5ae78pt4TKZWdPmFh-xR-W_WkG5jb1ZxEiV8LZXuJT_qLYKR343riueFmtfso__3MXChwTi85thU_ZLl_pt_GKnGXv23Fz5JWb30KIF4QVg" alt="Watches">
+              </div>
+              <span class="dept-pill-title">Watches</span>
+              <span class="dept-pill-count">38 Timepieces</span>
+            </a>
+          </div>
+
+          <!-- Dept 3 -->
+          <div class="col">
+            <a href="shop.html?dept=Haute%20Couture%20%26%20Leather" class="dept-pill-card">
+              <div class="dept-image-disc">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuABoHQRCzxLyKzf2jaIUixmAvpiRolvIGH8MJZOI0ECw6LU4gOCAD7ouNQS8IGDqHMmZPSGwV1TpW2kqWBs8oad74s1O40F3t4P7a5TnhsIUXBZtGQ0_YOhHeSIWyHCD-3U6MLh_L29xpu5ae78pt4TKZWdPmFh-xR-W_WkG5jb1ZxEiV8LZXuJT_qLYKR343riueFmtfso__3MXChwTi85thU_ZLl_pt_GKnGXv23Fz5JWb30KIF4QVg" alt="Designer fashion">
+              </div>
+              <span class="dept-pill-title">Designer fashion</span>
+              <span class="dept-pill-count">84 Pieces</span>
+            </a>
+          </div>
+
+          <!-- Dept 4 -->
+          <div class="col">
+            <a href="shop.html?dept=Architectural%20Home" class="dept-pill-card">
+              <div class="dept-image-disc">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuABoHQRCzxLyKzf2jaIUixmAvpiRolvIGH8MJZOI0ECw6LU4gOCAD7ouNQS8IGDqHMmZPSGwV1TpW2kqWBs8oad74s1O40F3t4P7a5TnhsIUXBZtGQ0_YOhHeSIWyHCD-3U6MLh_L29xpu5ae78pt4TKZWdPmFh-xR-W_WkG5jb1ZxEiV8LZXuJT_qLYKR343riueFmtfso__3MXChwTi85thU_ZLl_pt_GKnGXv23Fz5JWb30KIF4QVg" alt="Home goods">
+              </div>
+              <span class="dept-pill-title">Home goods</span>
+              <span class="dept-pill-count">56 Objects</span>
+            </a>
+          </div>
+
+          <!-- Dept 5 -->
+          <div class="col">
+            <a href="shop.html?dept=Prestige%20Fragrance%20%26%20Beauty" class="dept-pill-card">
+              <div class="dept-image-disc">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuABoHQRCzxLyKzf2jaIUixmAvpiRolvIGH8MJZOI0ECw6LU4gOCAD7ouNQS8IGDqHMmZPSGwV1TpW2kqWBs8oad74s1O40F3t4P7a5TnhsIUXBZtGQ0_YOhHeSIWyHCD-3U6MLh_L29xpu5ae78pt4TKZWdPmFh-xR-W_WkG5jb1ZxEiV8LZXuJT_qLYKR343riueFmtfso__3MXChwTi85thU_ZLl_pt_GKnGXv23Fz5JWb30KIF4QVg" alt="Fragrance">
+              </div>
+              <span class="dept-pill-title">Fragrance</span>
+              <span class="dept-pill-count">29 Flacons</span>
+            </a>
+          </div>
+
+          <!-- Dept 6 -->
+          <div class="col">
+            <a href="shop.html" class="dept-pill-card">
+              <div class="dept-image-disc d-flex align-items-center justify-content-center bg-dark text-warning">
+                <i class="bi bi-grid-3x3-gap fs-3"></i>
+              </div>
+              <span class="dept-pill-title">View all products</span>
+              <span class="dept-pill-count">1,428 Total</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: CURATED FLASH ALLOTMENTS / PRIVATE VAULT -->
+    <section class="py-5 px-3" style="background: #FFFFFF; border-top: 1px solid var(--ps-border); border-bottom: 1px solid var(--ps-border);">
+      <div class="container-fluid max-w-1440">
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-danger text-white rounded-pill px-2.5 py-1 text-uppercase" style="font-size: 10px; font-weight: 700; letter-spacing: 0.05em;">Limited offer</span>
+              <span class="text-danger fw-semibold small"><i class="bi bi-clock"></i> Offer ends in 04h : 22m : 18s</span>
+            </div>
+            <h2 class="section-main-title mt-1 mb-0">Special offers</h2>
+          </div>
+          <a href="shop.html" class="btn btn-outline-luxury btn-sm">View all offers »</a>
+        </div>
+
+        <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-4">
+          <!-- Item 1: Horizon X -->
+          <div class="col">
+            <article class="product-card">
+              <div class="card-media-wrapper">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMLAbgX7U6nu7mjwO8H7JX8DSbApSELoUkjqkv_zUVDl5Bk-obGKkc-2DqBTWM-QOhEzyUgPB4OfibYmiMHg7iKL4Y6OgzUHBiys2fiJKA161Q8zAj3UylOT87OSkQZ8nlbtH0ryvO98I1c-sKdKs6Ek2INo-WuGzff9Ju4Kz9ekiGUJ7tJFR7PbPzmGnKigBN0y-L1A2irmPqFHOj8s7K6OHj-Mc2KWXYyOkt8D_9fVnH4tSwK_AhxQ" alt="Horizon X Titanium Ultra">
+                <div class="card-badge-container">
+                  <span class="badge badge-atelier">Limited offer</span>
+                </div>
+                <button type="button" class="wishlist-btn wishlist-toggle-btn" data-product-id="horizon-x" title="Save to Wishlist">
+                  <i class="bi bi-heart"></i>
+                </button>
+                <div class="card-quick-actions">
+                  <button type="button" class="btn btn-gold btn-sm flex-grow-1 quick-add-to-bag" data-product-id="horizon-x">
+                    <i class="bi bi-bag-plus"></i> Quick Add
+                  </button>
+                  <button type="button" class="btn btn-navy btn-sm quick-view-trigger" data-product-id="horizon-x" title="Quick View">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <span class="card-brand-tag">Horizon Atelier</span>
+              <h3 class="card-product-title">
+                <a href="product.html?id=horizon-x">Horizon X Titanium Ultra (512GB) – Obsidian Black</a>
+              </h3>
+              <div class="rating-cluster">
+                <span class="stars-gold">★★★★★</span>
+                <span class="rating-count">(128)</span>
+              </div>
+              <div class="card-price-cluster">
+                <span class="price-current">₹2,78,739</span>
+                <span class="price-original">₹3,07,680</span>
+                <span class="price-discount-pill">-10%</span>
+              </div>
+              <div class="stock-indicator-note"><i class="bi bi-lightning-charge-fill"></i> Only 4 Left in Limited offer</div>
+            </article>
+          </div>
+
+          <!-- Item 2: Beoplay H95 -->
+          <div class="col">
+            <article class="product-card">
+              <div class="card-media-wrapper">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFk2ZgKe9Th3JfEvP2ZWCJwEOm8f93e2oHu0Ju6H6yCC4U4EoFMXzJwJG0gNxKz0l3uKHPYt915CEOsB6GteazpkxxSSSbTYPGUWWT2QBYIiksQlCsMWdQT5IgNT8XjGK4GUEkZGsWIhnZibQ6VJSRoTB1XwWsjafvmVjlu8GCDpU3yk3XRk1e3iu4d4I3nTvdy1wIGzFWroyzq7T6cC5pyDo1jyceIHSxxETH-T_VWZzhwoPd9_W1w" alt="Beoplay H95">
+                <div class="card-badge-container">
+                  <span class="badge badge-flash">Heritage Deal</span>
+                </div>
+                <button type="button" class="wishlist-btn wishlist-toggle-btn" data-product-id="beoplay-h95" title="Save to Wishlist">
+                  <i class="bi bi-heart"></i>
+                </button>
+                <div class="card-quick-actions">
+                  <button type="button" class="btn btn-gold btn-sm flex-grow-1 quick-add-to-bag" data-product-id="beoplay-h95">
+                    <i class="bi bi-bag-plus"></i> Quick Add
+                  </button>
+                  <button type="button" class="btn btn-navy btn-sm quick-view-trigger" data-product-id="beoplay-h95" title="Quick View">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <span class="card-brand-tag">Bang &amp; Olufsen</span>
+              <h3 class="card-product-title">
+                <a href="product.html?id=beoplay-h95">Beoplay H95 Ultimate Over-Ear Headphones</a>
+              </h3>
+              <div class="rating-cluster">
+                <span class="stars-gold">★★★★★</span>
+                <span class="rating-count">(84)</span>
+              </div>
+              <div class="card-price-cluster">
+                <span class="price-current">₹96,054</span>
+                <span class="price-original">₹1,15,284</span>
+                <span class="price-discount-pill">-17%</span>
+              </div>
+              <div class="stock-indicator-note"><i class="bi bi-lightning-charge-fill"></i> Available for Same-Day Dispatch</div>
+            </article>
+          </div>
+
+          <!-- Item 3: Devialet Phantom II -->
+          <div class="col">
+            <article class="product-card">
+              <div class="card-media-wrapper">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuABoHQRCzxLyKzf2jaIUixmAvpiRolvIGH8MJZOI0ECw6LU4gOCAD7ouNQS8IGDqHMmZPSGwV1TpW2kqWBs8oad74s1O40F3t4P7a5TnhsIUXBZtGQ0_YOhHeSIWyHCD-3U6MLh_L29xpu5ae78pt4TKZWdPmFh-xR-W_WkG5jb1ZxEiV8LZXuJT_qLYKR343riueFmtfso__3MXChwTi85thU_ZLl_pt_GKnGXv23Fz5JWb30KIF4QVg" alt="Devialet Phantom II">
+                <div class="card-badge-container">
+                  <span class="badge badge-atelier">Limited-time offer</span>
+                </div>
+                <button type="button" class="wishlist-btn wishlist-toggle-btn" data-product-id="phantom-ii" title="Save to Wishlist">
+                  <i class="bi bi-heart"></i>
+                </button>
+                <div class="card-quick-actions">
+                  <button type="button" class="btn btn-gold btn-sm flex-grow-1 quick-add-to-bag" data-product-id="phantom-ii">
+                    <i class="bi bi-bag-plus"></i> Quick Add
+                  </button>
+                  <button type="button" class="btn btn-navy btn-sm quick-view-trigger" data-product-id="phantom-ii" title="Quick View">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <span class="card-brand-tag">Devialet</span>
+              <h3 class="card-product-title">
+                <a href="product.html?id=phantom-ii">Phantom II 98dB Ultra-Compact High-Fidelity Speaker</a>
+              </h3>
+              <div class="rating-cluster">
+                <span class="stars-gold">★★★★★</span>
+                <span class="rating-count">(64)</span>
+              </div>
+              <div class="card-price-cluster">
+                <span class="price-current">₹1,34,610</span>
+                <span class="price-original">₹1,49,032</span>
+                <span class="price-discount-pill">-10%</span>
+              </div>
+              <div class="stock-indicator-note"><i class="bi bi-lightning-charge-fill"></i> Limited-time offer</div>
+            </article>
+          </div>
+
+          <!-- Item 4: Focal Utopia -->
+          <div class="col">
+            <article class="product-card">
+              <div class="card-media-wrapper">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwDwbGUozAyA_jeGYAEvh3kc8wREmMqK43IVqW0-O-aY0iW-JStWEED5bLQiecWJxiWRWiHMnVa6KQmT0zsIpJbrbdYfcuDSV7oXkyMbCQBNfvNB6gEiufDf6K8FGSPdM0eIjY2oi0URt39MeM0Ltg055p9Y3Fq5roHoKUSEe_9rgQt0u_XruHejw_OfH3IdZQXe2intcKujJuLgnJ1Jf6650QZpuGRRZMkaHHFefRY-hv8y4dQT5OdA" alt="Focal Utopia">
+                <div class="card-badge-container">
+                  <span class="badge badge-atelier">Top audio quality</span>
+                </div>
+                <button type="button" class="wishlist-btn wishlist-toggle-btn" data-product-id="focal-utopia" title="Save to Wishlist">
+                  <i class="bi bi-heart"></i>
+                </button>
+                <div class="card-quick-actions">
+                  <button type="button" class="btn btn-gold btn-sm flex-grow-1 quick-add-to-bag" data-product-id="focal-utopia">
+                    <i class="bi bi-bag-plus"></i> Quick Add
+                  </button>
+                  <button type="button" class="btn btn-navy btn-sm quick-view-trigger" data-product-id="focal-utopia" title="Quick View">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <span class="card-brand-tag">Focal</span>
+              <h3 class="card-product-title">
+                <a href="product.html?id=focal-utopia">Focal Utopia 2022 Open-Back Reference Headphones</a>
+              </h3>
+              <div class="rating-cluster">
+                <span class="stars-gold">★★★★★</span>
+                <span class="rating-count">(46)</span>
+              </div>
+              <div class="card-price-cluster">
+                <span class="price-current">₹4,80,654</span>
+                <span class="price-original">₹5,28,729</span>
+                <span class="price-discount-pill">-9%</span>
+              </div>
+              <div class="stock-indicator-note"><i class="bi bi-lightning-charge-fill"></i> Verified product</div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ACOUSTIC SCULPTURE & ADVANCED OPTICS -->
+    <section class="py-5 px-3" style="background: var(--ps-canvas);">
+      <div class="container-fluid max-w-1440">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+          <div>
+            <span class="section-pre-tag">High-Fidelity Audio &amp; Optics</span>
+            <h2 class="section-main-title mb-0">Audio and cameras</h2>
+          </div>
+          <a href="shop.html?dept=Electronics%20%26%20Hi-Fi" class="btn btn-outline-luxury btn-sm">Shop all audio »</a>
+        </div>
+
+        <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-4">
+          <!-- Bowers & Wilkins Px8 -->
+          <div class="col">
+            <article class="product-card">
+              <div class="card-media-wrapper">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwDwbGUozAyA_jeGYAEvh3kc8wREmMqK43IVqW0-O-aY0iW-JStWEED5bLQiecWJxiWRWiHMnVa6KQmT0zsIpJbrbdYfcuDSV7oXkyMbCQBNfvNB6gEiufDf6K8FGSPdM0eIjY2oi0URt39MeM0Ltg055p9Y3Fq5roHoKUSEe_9rgQt0u_XruHejw_OfH3IdZQXe2intcKujJuLgnJ1Jf6650QZpuGRRZMkaHHFefRY-hv8y4dQT5OdA" alt="Bowers & Wilkins Px8">
+                <div class="card-badge-container"><span class="badge badge-atelier">Made in Britain</span></div>
+                <button type="button" class="wishlist-btn wishlist-toggle-btn" data-product-id="bowers-wilkins-px8"><i class="bi bi-heart"></i></button>
+                <div class="card-quick-actions">
+                  <button type="button" class="btn btn-gold btn-sm flex-grow-1 quick-add-to-bag" data-product-id="bowers-wilkins-px8"><i class="bi bi-bag-plus"></i> Quick Add</button>
+                </div>
+              </div>
+              <span class="card-brand-tag">Bowers &amp; Wilkins</span>
+              <h3 class="card-product-title"><a href="product.html?id=bowers-wilkins-px8">Bowers &amp; Wilkins Px8 Flagship Wireless Over-Ear</a></h3>
+              <div class="rating-cluster"><span class="stars-gold">★★★★★</span><span class="rating-count">(92)</span></div>
+              <div class="card-price-cluster"><span class="price-current">₹67,209</span><span class="price-original">₹76,824</span></div>
+            </article>
+          </div>
+
+          <!-- Meze Empyrean II -->
+          <div class="col">
+            <article class="product-card">
+              <div class="card-media-wrapper">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwDwbGUozAyA_jeGYAEvh3kc8wREmMqK43IVqW0-O-aY0iW-JStWEED5bLQiecWJxiWRWiHMnVa6KQmT0zsIpJbrbdYfcuDSV7oXkyMbCQBNfvNB6gEiufDf6K8FGSPdM0eIjY2oi0URt39MeM0Ltg055p9Y3Fq5roHoKUSEe_9rgQt0u_XruHejw_OfH3IdZQXe2intcKujJuLgnJ1Jf6650QZpuGRRZMkaHHFefRY-hv8y4dQT5OdA" alt="Meze Empyrean II">
+                <div class="card-badge-container"><span class="badge badge-atelier">Handmade</span></div>
+                <button type="button" class="wishlist-btn wishlist-toggle-btn" data-product-id="meze-empyrean-ii"><i class="bi bi-heart"></i></button>
+                <div class="card-quick-actions">
+                  <button type="button" class="btn btn-gold btn-sm flex-grow-1 quick-add-to-bag" data-product-id="meze-empyrean-ii"><i class="bi bi-bag-plus"></i> Quick Add</button>
+                </div>
+              </div>
+              <span class="card-brand-tag">Meze Audio</span>
+              <h3 class="card-product-title"><a href="product.html?id=meze-empyrean-ii">Meze Audio Empyrean II Isodynamic Hybrid Array</a></h3>
+              <div class="rating-cluster"><span class="stars-gold">★★★★★</span><span class="rating-count">(39)</span></div>
+              <div class="card-price-cluster"><span class="price-current">₹2,88,354</span><span class="price-original">₹3,17,199</span></div>
+            </article>
+          </div>
+
+          <!-- Sennheiser HD 800 S -->
+          <div class="col">
+            <article class="product-card">
+              <div class="card-media-wrapper">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwDwbGUozAyA_jeGYAEvh3kc8wREmMqK43IVqW0-O-aY0iW-JStWEED5bLQiecWJxiWRWiHMnVa6KQmT0zsIpJbrbdYfcuDSV7oXkyMbCQBNfvNB6gEiufDf6K8FGSPdM0eIjY2oi0URt39MeM0Ltg055p9Y3Fq5roHoKUSEe_9rgQt0u_XruHejw_OfH3IdZQXe2intcKujJuLgnJ1Jf6650QZpuGRRZMkaHHFefRY-hv8y4dQT5OdA" alt="Sennheiser HD 800 S">
+                <div class="card-badge-container"><span class="badge badge-atelier">Made in Germany</span></div>
+                <button type="button" class="wishlist-btn wishlist-toggle-btn" data-product-id="sennheiser-hd800s"><i class="bi bi-heart"></i></button>
+                <div class="card-quick-actions">
+                  <button type="button" class="btn btn-gold btn-sm flex-grow-1 quick-add-to-bag" data-product-id="sennheiser-hd800s"><i class="bi bi-bag-plus"></i> Quick Add</button>
+                </div>
+              </div>
+              <span class="card-brand-tag">Sennheiser</span>
+              <h3 class="card-product-title"><a href="product.html?id=sennheiser-hd800s">Sennheiser HD 800 S Reference Headphone System</a></h3>
+              <div class="rating-cluster"><span class="stars-gold">★★★★★</span><span class="rating-count">(112)</span></div>
+              <div class="card-price-cluster"><span class="price-current">₹1,72,974</span><span class="price-original">₹1,92,204</span></div>
+            </article>
+          </div>
+
+          <!-- Apple AirPods Max Custom Leather -->
+          <div class="col">
+            <article class="product-card">
+              <div class="card-media-wrapper">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwDwbGUozAyA_jeGYAEvh3kc8wREmMqK43IVqW0-O-aY0iW-JStWEED5bLQiecWJxiWRWiHMnVa6KQmT0zsIpJbrbdYfcuDSV7oXkyMbCQBNfvNB6gEiufDf6K8FGSPdM0eIjY2oi0URt39MeM0Ltg055p9Y3Fq5roHoKUSEe_9rgQt0u_XruHejw_OfH3IdZQXe2intcKujJuLgnJ1Jf6650QZpuGRRZMkaHHFefRY-hv8y4dQT5OdA" alt="AirPods Max Custom">
+                <div class="card-badge-container"><span class="badge badge-atelier">Custom design</span></div>
+                <button type="button" class="wishlist-btn wishlist-toggle-btn" data-product-id="airpods-max-custom"><i class="bi bi-heart"></i></button>
+                <div class="card-quick-actions">
+                  <button type="button" class="btn btn-gold btn-sm flex-grow-1 quick-add-to-bag" data-product-id="airpods-max-custom"><i class="bi bi-bag-plus"></i> Quick Add</button>
+                </div>
+              </div>
+              <span class="card-brand-tag">Apple Atelier</span>
+              <h3 class="card-product-title"><a href="product.html?id=airpods-max-custom">AirPods Max – Space Black with Custom Leather Band</a></h3>
+              <div class="rating-cluster"><span class="stars-gold">★★★★★</span><span class="rating-count">(78)</span></div>
+              <div class="card-price-cluster"><span class="price-current">₹76,824</span><span class="price-original">₹86,439</span></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: FEATURE HIGHLIGHT - EAMES SANCTUARY -->
+    <section class="py-5 px-3" style="background: var(--ps-midnight); color: #FFFFFF;">
+      <div class="container-fluid max-w-1440 py-lg-4">
+        <div class="row align-items-center g-4 g-lg-5">
+          <div class="col-lg-6">
+            <div class="position-relative rounded-4 overflow-hidden shadow-lg border border-secondary border-opacity-25">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuABoHQRCzxLyKzf2jaIUixmAvpiRolvIGH8MJZOI0ECw6LU4gOCAD7ouNQS8IGDqHMmZPSGwV1TpW2kqWBs8oad74s1O40F3t4P7a5TnhsIUXBZtGQ0_YOhHeSIWyHCD-3U6MLh_L29xpu5ae78pt4TKZWdPmFh-xR-W_WkG5jb1ZxEiV8LZXuJT_qLYKR343riueFmtfso__3MXChwTi85thU_ZLl_pt_GKnGXv23Fz5JWb30KIF4QVg" alt="Eames Lounge Chair" class="w-100 object-fit-cover" style="height: 420px;">
+              <span class="badge badge-atelier position-absolute top-0 start-0 m-3">Design collection</span>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <span class="hero-lead-tag"><i class="bi bi-stars"></i> Modernist Sanctuary</span>
+            <h2 class="display-6 fw-bold mb-3" style="font-family: var(--ps-font-serif);">
+              Eames Lounge Chair &amp; Ottoman in Oiled Santos Palisander
+            </h2>
+            <p class="text-secondary lead mb-4" style="color: #94A3B8 !important; font-size: 16px; line-height: 1.7;">
+              Charles and Ray Eames envisioned this chair to provide the warm, receptive look of a well-used first baseman's mitt. Hand-assembled with 7-ply molded wood veneers and supple semi-aniline European hide.
+            </p>
+            <div class="d-flex align-items-baseline gap-3 mb-4">
+              <span class="fs-2 fw-bold text-white">₹7,87,949</span>
+              <span class="text-success small fw-semibold">✓ Setup in your home included</span>
+            </div>
+            <div class="d-flex gap-3">
+              <a href="product.html?id=eames-lounge" class="btn btn-gold px-4 py-2.5">Buy lounge set</a>
+              <button type="button" class="btn btn-outline-luxury text-white border-secondary px-4 py-2.5" onclick="ProShopStore.addToCart('eames-lounge', 1, { finish: 'Oiled Santos Palisander' })">
+                <i class="bi bi-bag-plus"></i> Add to Bag
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: OUR PARTNER BRANDS -->
+    <section class="py-5 px-3" style="background: #FFFFFF; border-bottom: 1px solid var(--ps-border);">
+      <div class="container-fluid max-w-1440 text-center">
+        <span class="section-pre-tag">Trusted partners</span>
+        <h2 class="section-main-title mb-4">Our partner brands</h2>
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-6 g-3 align-items-center justify-content-center opacity-75">
+          <div class="col p-3"><span class="fs-5 fw-bold text-dark" style="font-family: var(--ps-font-serif); letter-spacing: 0.15em;">LEICA</span></div>
+          <div class="col p-3"><span class="fs-5 fw-bold text-dark" style="font-family: var(--ps-font-sans); letter-spacing: 0.2em;">BANG &amp; OLUFSEN</span></div>
+          <div class="col p-3"><span class="fs-5 fw-bold text-dark" style="font-family: var(--ps-font-serif); letter-spacing: 0.15em;">DEVIALET</span></div>
+          <div class="col p-3"><span class="fs-5 fw-bold text-dark" style="font-family: var(--ps-font-sans); letter-spacing: 0.25em;">FOCAL</span></div>
+          <div class="col p-3"><span class="fs-5 fw-bold text-dark" style="font-family: var(--ps-font-serif); letter-spacing: 0.12em;">AUDEMARS PIGUET</span></div>
+          <div class="col p-3"><span class="fs-5 fw-bold text-dark" style="font-family: var(--ps-font-serif); letter-spacing: 0.1em;">DIPTYQUE PARIS</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: PROSHOP FOUR GUARANTEES -->
+    <section class="py-5 px-3" style="background: var(--ps-canvas);">
+      <div class="container-fluid max-w-1440">
+        <div class="row g-4 row-cols-1 row-cols-md-3">
+          <div class="col">
+            <div class="card h-100 p-4 border rounded-4 bg-white shadow-sm">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="d-flex align-items-center justify-content-center rounded-circle bg-dark text-warning fs-5" style="width: 44px; height: 44px;">
+                  <i class="bi bi-shield-check"></i>
+                </span>
+                <h5 class="fw-bold mb-0" style="font-family: var(--ps-font-serif);">Product checks by our experts</h5>
+              </div>
+              <p class="text-muted small mb-0">Our experts carefully check every watch, camera lens, and leather item. Each comes with a certificate.</p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card h-100 p-4 border rounded-4 bg-white shadow-sm">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="d-flex align-items-center justify-content-center rounded-circle bg-dark text-warning fs-5" style="width: 44px; height: 44px;">
+                  <i class="bi bi-truck"></i>
+                </span>
+                <h5 class="fw-bold mb-0" style="font-family: var(--ps-font-serif);">Insured delivery</h5>
+              </div>
+              <p class="text-muted small mb-0">Orders are sent by insured couriers. Same-day delivery is available in Manhattan and London.</p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card h-100 p-4 border rounded-4 bg-white shadow-sm">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="d-flex align-items-center justify-content-center rounded-circle bg-dark text-warning fs-5" style="width: 44px; height: 44px;">
+                  <i class="bi bi-gift"></i>
+                </span>
+                <h5 class="fw-bold mb-0" style="font-family: var(--ps-font-serif);">Gift box</h5>
+              </div>
+              <p class="text-muted small mb-0">Each gift comes in a linen box with a gold tag, ribbon, and wax seal.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: PROSHOP NOIR GUILD NEWSLETTER INVITATION -->
+    <section class="py-5 px-3" style="background: var(--ps-midnight-deep); color: #FFFFFF;">
+      <div class="container-fluid max-w-1440 py-lg-4 text-center">
+        <span class="hero-lead-tag"><i class="bi bi-stars"></i> Exclusive Guild Access</span>
+        <h2 class="display-6 fw-bold mb-3" style="font-family: var(--ps-font-serif);">Get ProShop updates</h2>
+        <p class="text-secondary small mx-auto max-w-md mb-4" style="color: #94A3B8 !important;">Receive updates about new offers, product previews, and help from our watch and audio experts.</p>
+        <form class="proshop-newsletter-form mx-auto d-flex flex-column flex-sm-row gap-2 max-w-md justify-content-center">
+          <input type="email" class="form-control bg-dark text-white border-secondary border-opacity-50 py-2.5 px-3" placeholder="Enter your email" required style="max-width: 360px;">
+          <button type="submit" class="btn btn-gold py-2.5 px-4 text-nowrap">Sign up</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MASTER LUXURY FOOTER -->
+  <footer class="proshop-footer">
+    <div class="container-fluid max-w-1440 px-3">
+      <div class="row g-4 g-lg-5 mb-5">
+        <div class="col-lg-4">
+          <a href="index.html" class="d-inline-block mb-3">
+            <img src="/static/assets/images/logo.svg" alt="ProShop" style="height: 44px;">
+          </a>
+          <p class="small text-secondary mb-3" style="color: #94A3B8 !important; line-height: 1.6;">
+            ProShop is an online store for quality products. We work with trusted brands and experts to check every item.
+          </p>
+          <div class="d-flex gap-3 text-secondary">
+            <a href="#" class="text-secondary"><i class="bi bi-instagram fs-5"></i></a>
+            <a href="#" class="text-secondary"><i class="bi bi-twitter-x fs-5"></i></a>
+            <a href="#" class="text-secondary"><i class="bi bi-linkedin fs-5"></i></a>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3 col-lg-2">
+          <h5>Shop by category</h5>
+          <ul>
+            <li><a href="shop.html?dept=Electronics%20%26%20Hi-Fi">Electronics & Hi-Fi</a></li>
+            <li><a href="shop.html?dept=Fine%20Horology%20%26%20Watches">Watches</a></li>
+            <li><a href="shop.html?dept=Haute%20Couture%20%26%20Leather">Designer fashion</a></li>
+            <li><a href="shop.html?dept=Architectural%20Home">Home goods</a></li>
+            <li><a href="shop.html?dept=Prestige%20Fragrance%20%26%20Beauty">Fragrance</a></li>
+          </ul>
+        </div>
+
+        <div class="col-6 col-md-3 col-lg-2">
+          <h5>Customer service</h5>
+          <ul>
+            <li><a href="#" data-bs-toggle="modal" data-bs-target="#proshopConciergeModal">Contact support</a></li>
+            <li><a href="cart.html">Shopping bag and checkout</a></li>
+            <li><a href="shop.html">Special offers</a></li>
+            <li><a href="#">Track your delivery</a></li>
+            <li><a href="#">Product warranty</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4">
+          <h5>Our offices</h5>
+          <p class="small text-secondary mb-1"><strong>Manhattan:</strong> 740 Park Avenue Salon, Suite 12B</p>
+          <p class="small text-secondary mb-1"><strong>London:</strong> 14 Berkeley Square, Mayfair W1J</p>
+          <p class="small text-secondary mb-3"><strong>Geneva:</strong> Rue du Rhône 42, 1204 Genève</p>
+          <div class="p-2.5 rounded bg-dark border border-secondary border-opacity-25 small text-secondary">
+            <i class="bi bi-lock-fill text-warning"></i> Secure payment
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-bar d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <span class="text-secondary">© 2026 ProShop. All rights reserved.</span>
+        <div class="d-flex gap-3 text-secondary">
+          <a href="#">Privacy policy</a>
+          <a href="#">Terms of service</a>
+          <a href="#">Watch certification</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- ProShop JavaScript Modules -->
+  <script src="/static/js/products-data.js"></script>
+  <script src="/static/js/store.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
