@@ -29,7 +29,7 @@ CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(
     [origin.strip() for origin in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
     + VERCEL_ORIGINS
 ))
-DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip() or os.environ.get("PROSHOP_DB_URL", "").strip()
 HAS_POSTGRES_SETTINGS = all(os.environ.get(key) for key in (
     "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"
 ))

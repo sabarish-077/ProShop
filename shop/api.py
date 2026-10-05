@@ -118,9 +118,14 @@ def auth_status(request):
     except DatabaseError:
         logger.exception("Could not read account session")
         return _error("Account service is temporarily unavailable.", 503)
-        return JsonResponse({"authenticated": authenticated,
-                         "user": {"name": user.get_full_name() or user.get_username(),
-                                  "email": user.email, "is_staff": user.is_staff} if authenticated else None})
+    return JsonResponse({
+        "authenticated": authenticated,
+        "user": {
+            "name": user.get_full_name() or user.get_username(),
+            "email": user.email,
+            "is_staff": user.is_staff,
+        } if authenticated else None,
+    })
 
 
 @require_POST
