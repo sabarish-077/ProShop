@@ -33,6 +33,10 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "").strip() or os.environ.get("PRO
 HAS_POSTGRES_SETTINGS = all(os.environ.get(key) for key in (
     "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"
 ))
+TRUSTED_REVERSE_PROXY = (
+    os.environ.get("VERCEL") == "1"
+    or os.environ.get("DJANGO_TRUST_PROXY", "false").strip().lower() == "true"
+)
 if not DEBUG:
     if SECRET_KEY == "dev-only-change-this-before-deploying" or SECRET_KEY.startswith("replace-with-") or len(SECRET_KEY) < 50:
         raise ImproperlyConfigured("Set DJANGO_SECRET_KEY to a long random value when DJANGO_DEBUG is false.")
@@ -46,7 +50,7 @@ if not DEBUG:
         database_sslmode = os.environ.get("POSTGRES_SSLMODE", "prefer")
     if database_sslmode.lower() != "require":
         raise ImproperlyConfigured("Set POSTGRES_SSLMODE=require for production database connections.")
-    if os.environ.get("DJANGO_SSL_REDIRECT", "false").lower() != "true":
+    if os.environ.get("DJANGO_SSL_REDIRECT", "false").lower() != "true" and not TRUSTED_REVERSE_PROXY:
         raise ImproperlyConfigured("Set DJANGO_SSL_REDIRECT=true to require HTTPS in production.")
     if urlparse(SITE_URL).scheme != "https" or not urlparse(SITE_URL).netloc:
         raise ImproperlyConfigured("Set DJANGO_SITE_URL to the public HTTPS site URL in production.")
@@ -176,7 +180,13 @@ CSRF_COOKIE_SAMESITE = "Lax"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 SECURE_REFERRER_POLICY = "same-origin"
-SECURE_SSL_REDIRECT = os.environ.get("DJANGO_SSL_REDIRECT", "false").lower() == "true"
+# A trusted proxy (including Vercel's edge) handles HTTPS before the request
+# reaches Django. Redirecting again inside its function can create a loop.
+# Secure cookies and HSTS remain enabled below in production.
+SECURE_SSL_REDIRECT = (
+    os.environ.get("DJANGO_SSL_REDIRECT", "false").strip().lower() == "true"
+    and not TRUSTED_REVERSE_PROXY
+)
 SESSION_COOKIE_SECURE = not DEBUG or SECURE_SSL_REDIRECT
 CSRF_COOKIE_SECURE = not DEBUG or SECURE_SSL_REDIRECT
 SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_HSTS_SECONDS", "0" if DEBUG else "31536000"))
@@ -185,7 +195,7 @@ SECURE_HSTS_PRELOAD = not DEBUG
 # Vercel terminates TLS at its edge and forwards the original protocol. Trust
 # that header there so HTTPS redirects and secure-cookie behavior work behind
 # the proxy without requiring an extra project environment variable.
-if os.environ.get("VERCEL") == "1" or os.environ.get("DJANGO_TRUST_PROXY", "false").lower() == "true":
+if TRUSTED_REVERSE_PROXY:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 LOGGING = {
