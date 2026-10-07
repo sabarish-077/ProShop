@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
@@ -86,6 +87,15 @@ def health(request):
         executor = MigrationExecutor(connection)
         pending_migrations = executor.migration_plan(executor.loader.graph.leaf_nodes())
         if pending_migrations:
+            return JsonResponse({"status": "unavailable"}, status=503)
+        existing_tables = set(connection.introspection.table_names())
+        required_tables = {
+            model._meta.db_table
+            for app_config in apps.get_app_configs()
+            for model in app_config.get_models()
+            if model._meta.managed
+        }
+        if required_tables - existing_tables:
             return JsonResponse({"status": "unavailable"}, status=503)
     except Exception:
         return JsonResponse({"status": "unavailable"}, status=503)

@@ -7,3 +7,6 @@ __pycache__/
 staticfiles/
 venv/
 .venv/
+
+.vercel
+.env*
