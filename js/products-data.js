@@ -857,11 +857,19 @@ const PROSHOP_CATALOG = [
 fetch('/api/products/', { headers: { Accept: 'application/json' } })
     .then(response => response.ok ? response.json() : Promise.reject(new Error('Catalog unavailable')))
     .then(payload => {
-        if (!Array.isArray(payload.products) || payload.products.length === 0) return;
+        if (!Array.isArray(payload.products) || payload.products.length === 0) {
+            window.PROSHOP_CATALOG_API_ERROR = true;
+            window.dispatchEvent(new CustomEvent('proshop:catalogunavailable'));
+            return;
+        }
         PROSHOP_CATALOG.splice(0, PROSHOP_CATALOG.length, ...payload.products);
+        window.PROSHOP_CATALOG_API_ERROR = false;
         window.dispatchEvent(new CustomEvent('proshop:catalogready'));
     })
-    .catch(() => {});
+    .catch(() => {
+        window.PROSHOP_CATALOG_API_ERROR = true;
+        window.dispatchEvent(new CustomEvent('proshop:catalogunavailable'));
+    });
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = PROSHOP_CATALOG;

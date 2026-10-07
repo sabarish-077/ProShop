@@ -182,7 +182,10 @@ CSRF_COOKIE_SECURE = not DEBUG or SECURE_SSL_REDIRECT
 SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_HSTS_SECONDS", "0" if DEBUG else "31536000"))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
-if os.environ.get("DJANGO_TRUST_PROXY", "false").lower() == "true":
+# Vercel terminates TLS at its edge and forwards the original protocol. Trust
+# that header there so HTTPS redirects and secure-cookie behavior work behind
+# the proxy without requiring an extra project environment variable.
+if os.environ.get("VERCEL") == "1" or os.environ.get("DJANGO_TRUST_PROXY", "false").lower() == "true":
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 LOGGING = {

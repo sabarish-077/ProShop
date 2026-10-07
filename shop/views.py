@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Sum
-from django.http import FileResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -29,7 +29,7 @@ def serve_page(request, page):
     if file_path.parent != frontend_root or not file_path.is_file():
         from django.http import Http404
         raise Http404
-    return FileResponse(file_path.open("rb"), content_type="text/html; charset=utf-8")
+    return HttpResponse(file_path.read_text(encoding="utf-8"), content_type="text/html; charset=utf-8")
 
 
 def home(request):
@@ -77,10 +77,16 @@ def staff_admin_login(request):
 @require_GET
 def health(request):
     from django.db import connection
+    from django.db.migrations.executor import MigrationExecutor
+
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
             cursor.fetchone()
+        executor = MigrationExecutor(connection)
+        pending_migrations = executor.migration_plan(executor.loader.graph.leaf_nodes())
+        if pending_migrations:
+            return JsonResponse({"status": "unavailable"}, status=503)
     except Exception:
         return JsonResponse({"status": "unavailable"}, status=503)
     return JsonResponse({"status": "ok"})

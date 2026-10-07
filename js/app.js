@@ -9,12 +9,39 @@ document.addEventListener('DOMContentLoaded', () => {
     initNewsletterForms();
     initProductCardListeners();
     initAccountLinks();
+    updateCatalogCount();
+    if (window.PROSHOP_CATALOG_API_ERROR) showCatalogUnavailableNotice();
+
+    window.addEventListener('proshop:catalogready', updateCatalogCount);
+    window.addEventListener('proshop:catalogunavailable', showCatalogUnavailableNotice);
 
     // Listen for state changes
     window.addEventListener('proshop:statechange', () => {
         renderCartDrawer();
     });
 });
+
+function updateCatalogCount() {
+    const count = document.getElementById('catalog-total-count');
+    if (count && typeof PROSHOP_CATALOG !== 'undefined' && Array.isArray(PROSHOP_CATALOG)) {
+        const total = PROSHOP_CATALOG.length;
+        count.textContent = `${total.toLocaleString('en-IN')} ${total === 1 ? 'product' : 'products'}`;
+    }
+}
+
+function showCatalogUnavailableNotice() {
+    if (!/\/(?:index\.html|shop\.html|product\.html)?$/.test(window.location.pathname)) return;
+    if (document.getElementById('catalog-unavailable-notice')) return;
+
+    const notice = document.createElement('div');
+    notice.id = 'catalog-unavailable-notice';
+    notice.className = 'alert alert-warning text-center rounded-0 mb-0';
+    notice.setAttribute('role', 'alert');
+    notice.textContent = 'Live product data is unavailable. Showing sample products; stock and prices may be out of date.';
+    const main = document.querySelector('main');
+    if (main?.parentNode) main.parentNode.insertBefore(notice, main);
+    else document.body.prepend(notice);
+}
 
 function initAccountLinks() {
     const label = document.querySelector('.account-link-label');

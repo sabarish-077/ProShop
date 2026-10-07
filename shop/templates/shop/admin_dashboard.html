@@ -14,7 +14,10 @@
     <a class="dashboard-brand" href="/">PROSHOP <span>STORE ADMIN</span></a>
     <nav aria-label="Admin navigation">
       <a href="{% url 'admin:index' %}"><i class="bi bi-sliders"></i> Manage store</a>
-      <a href="/admin/logout/"><i class="bi bi-box-arrow-right"></i> Sign out</a>
+      <form action="/admin/logout/" method="post" class="dashboard-signout-form">
+        {% csrf_token %}
+        <button type="submit"><i class="bi bi-box-arrow-right"></i> Sign out</button>
+      </form>
     </nav>
   </header>
   <main class="dashboard-main">
