@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
@@ -33,6 +34,7 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "").strip() or os.environ.get("PRO
 HAS_POSTGRES_SETTINGS = all(os.environ.get(key) for key in (
     "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"
 ))
+RUNNING_MANAGEMENT_COMMAND = Path(sys.argv[0]).name.lower() == "manage.py"
 TRUSTED_REVERSE_PROXY = (
     os.environ.get("VERCEL") == "1"
     or os.environ.get("DJANGO_TRUST_PROXY", "false").strip().lower() == "true"
@@ -54,7 +56,7 @@ if not DEBUG:
         raise ImproperlyConfigured("Set DJANGO_SSL_REDIRECT=true to require HTTPS in production.")
     if urlparse(SITE_URL).scheme != "https" or not urlparse(SITE_URL).netloc:
         raise ImproperlyConfigured("Set DJANGO_SITE_URL to the public HTTPS site URL in production.")
-    if not os.environ.get("EMAIL_HOST") or not os.environ.get("DEFAULT_FROM_EMAIL"):
+    if (not os.environ.get("EMAIL_HOST") or not os.environ.get("DEFAULT_FROM_EMAIL")) and not RUNNING_MANAGEMENT_COMMAND:
         raise ImproperlyConfigured("Set EMAIL_HOST and DEFAULT_FROM_EMAIL for production email verification.")
 
 INSTALLED_APPS = [
