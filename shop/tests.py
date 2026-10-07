@@ -53,14 +53,20 @@ class HealthCheckTests(TestCase):
     def test_health_reports_pending_migrations(self, _migration_plan):
         response = self.client.get("/api/health/")
         self.assertEqual(response.status_code, 503)
-        self.assertEqual(response.json(), {"status": "unavailable"})
+        self.assertEqual(response.json(), {"status": "unavailable", "check": "migrations"})
 
     @patch("django.db.migrations.executor.MigrationExecutor.migration_plan", return_value=[])
     @patch("django.db.backends.base.introspection.BaseDatabaseIntrospection.table_names", return_value=[])
     def test_health_reports_missing_database_tables(self, _table_names, _migration_plan):
         response = self.client.get("/api/health/")
         self.assertEqual(response.status_code, 503)
-        self.assertEqual(response.json(), {"status": "unavailable"})
+        self.assertEqual(response.json(), {"status": "unavailable", "check": "schema"})
+
+    @patch("django.db.connection.cursor", side_effect=RuntimeError("hidden database detail"))
+    def test_health_reports_database_connection_failure_without_details(self, _cursor):
+        response = self.client.get("/api/health/")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json(), {"status": "unavailable", "check": "database"})
 
 
 class ProductApiTests(TestCase):

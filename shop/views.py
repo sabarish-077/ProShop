@@ -84,10 +84,18 @@ def health(request):
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
             cursor.fetchone()
+    except Exception:
+        return JsonResponse({"status": "unavailable", "check": "database"}, status=503)
+
+    try:
         executor = MigrationExecutor(connection)
         pending_migrations = executor.migration_plan(executor.loader.graph.leaf_nodes())
-        if pending_migrations:
-            return JsonResponse({"status": "unavailable"}, status=503)
+    except Exception:
+        return JsonResponse({"status": "unavailable", "check": "migrations"}, status=503)
+    if pending_migrations:
+        return JsonResponse({"status": "unavailable", "check": "migrations"}, status=503)
+
+    try:
         existing_tables = set(connection.introspection.table_names())
         required_tables = {
             model._meta.db_table
@@ -96,7 +104,7 @@ def health(request):
             if model._meta.managed
         }
         if required_tables - existing_tables:
-            return JsonResponse({"status": "unavailable"}, status=503)
+            return JsonResponse({"status": "unavailable", "check": "schema"}, status=503)
     except Exception:
-        return JsonResponse({"status": "unavailable"}, status=503)
+        return JsonResponse({"status": "unavailable", "check": "database"}, status=503)
     return JsonResponse({"status": "ok"})
