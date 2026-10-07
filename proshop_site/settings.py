@@ -22,15 +22,27 @@ SITE_URL = os.environ.get(
     if os.environ.get("VERCEL_PROJECT_PRODUCTION_URL") or os.environ.get("VERCEL_URL")
     else "http://127.0.0.1:8000",
 )
+SITE_URL_HOST = urlparse(SITE_URL).hostname
 ALLOWED_HOSTS = list(dict.fromkeys(
     [host.strip() for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if host.strip()]
+    + ([SITE_URL_HOST] if SITE_URL_HOST else [])
     + VERCEL_HOSTS
 ))
 CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(
     [origin.strip() for origin in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
     + VERCEL_ORIGINS
 ))
-DATABASE_URL = os.environ.get("DATABASE_URL", "").strip() or os.environ.get("PROSHOP_DB_DATABASE_URL", "").strip()
+
+
+def _database_url_from_environment():
+    database_url = os.environ.get("DATABASE_URL", "").strip()
+    proshop_database_url = os.environ.get("PROSHOP_DB_DATABASE_URL", "").strip()
+    if os.environ.get("VERCEL") == "1":
+        return proshop_database_url or database_url
+    return database_url or proshop_database_url
+
+
+DATABASE_URL = _database_url_from_environment()
 HAS_POSTGRES_SETTINGS = all(os.environ.get(key) for key in (
     "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"
 ))

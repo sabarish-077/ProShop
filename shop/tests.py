@@ -2,14 +2,45 @@ import json
 from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase, override_settings
+from django.utils.crypto import get_random_string
+
+from proshop_site.settings import _database_url_from_environment
 
 from .models import Product
 
 
 class PublicPageTests(TestCase):
+    def test_vercel_prefers_project_scoped_database_url(self):
+        with patch.dict("os.environ", {
+            "VERCEL": "1",
+            "DATABASE_URL": "postgresql://generic.example/db",
+            "PROSHOP_DB_DATABASE_URL": "postgresql://proshop.example/db",
+        }):
+            self.assertEqual(
+                _database_url_from_environment(),
+                "postgresql://proshop.example/db",
+            )
+
+    def test_local_database_url_precedence_is_unchanged(self):
+        with patch.dict("os.environ", {
+            "VERCEL": "0",
+            "DATABASE_URL": "postgresql://generic.example/db",
+            "PROSHOP_DB_DATABASE_URL": "postgresql://proshop.example/db",
+        }):
+            self.assertEqual(
+                _database_url_from_environment(),
+                "postgresql://generic.example/db",
+            )
+
+    def test_configured_site_host_is_allowed(self):
+        site_host = urlparse(settings.SITE_URL).hostname
+        self.assertIsNotNone(site_host)
+        self.assertIn(site_host, settings.ALLOWED_HOSTS)
+
     def test_store_pages_load(self):
         for path in ("/", "/shop.html", "/product.html", "/cart.html", "/account.html"):
             with self.subTest(path=path):
@@ -30,6 +61,20 @@ class PublicPageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Store dashboard")
         self.assertContains(response, 'action="/admin/logout/" method="post"')
+
+    def test_staff_can_sign_in_through_admin_login(self):
+        password = get_random_string(32)
+        get_user_model().objects.create_user(
+            username="admin-login-test", password=password, is_staff=True
+        )
+
+        response = self.client.post(
+            "/admin/login/?next=/admin-dashboard/",
+            {"username": "admin-login-test", "password": password},
+        )
+
+        self.assertRedirects(response, "/admin-dashboard/", fetch_redirect_response=False)
+        self.assertTrue(self.client.get("/api/auth/status/").json()["authenticated"])
 
     def test_staff_can_sign_out_with_post(self):
         user = get_user_model().objects.create_user(

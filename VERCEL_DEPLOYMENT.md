@@ -8,7 +8,7 @@ Choose **Add New → Project** in Vercel. You can import a Git repository or use
 
 ## 2. Create PostgreSQL
 
-Create a PostgreSQL database with a provider that allows connections from Vercel. In Vercel, add the database's full PostgreSQL connection string as `DATABASE_URL` for **Production, Preview, and Development** as needed. Use a connection string with TLS; production settings require `sslmode=require` (the app enforces TLS for `DATABASE_URL`). Do not use the local SQLite file for deployed data.
+Create a PostgreSQL database with a provider that allows connections from Vercel. In Vercel, add the database's full PostgreSQL connection string as `DATABASE_URL` for **Production, Preview, and Development** as needed. When using the Vercel Neon integration, the project-scoped `PROSHOP_DB_DATABASE_URL` is preferred over a generic `DATABASE_URL` on Vercel so another linked database cannot silently take precedence. Confirm that this variable points to the intended ProShop database. Use a connection string with TLS; production settings require `sslmode=require` (the app enforces TLS for `DATABASE_URL`). Do not use the local SQLite file for deployed data.
 
 ## 3. Add environment variables
 
@@ -38,7 +38,15 @@ Vercel's `VERCEL_URL` values are automatically allowed for Django host and CSRF 
 
 Vercel terminates public HTTPS at its edge. Keep Django's own HTTPS redirect disabled on Vercel to avoid redirect loops between the edge and the serverless function; `DJANGO_DEBUG=false` still keeps session and CSRF cookies secure, and production HSTS remains enabled.
 
-## 4. Deploy, then initialize the database
+## 4. Allow public production traffic
+
+The storefront and customer account APIs are public. Disable Vercel Deployment Protection for the production deployment/domain, or limit protection to preview deployments. Vercel protection intercepts page and API requests before Django sees them, so customer sign-in and the Django admin cannot work behind the Vercel sign-in page. The admin remains protected by Django staff authentication.
+
+Set `DJANGO_SITE_URL` to the public production URL. Django includes that URL's hostname in `ALLOWED_HOSTS`; add any other production or custom hostnames to `DJANGO_ALLOWED_HOSTS`.
+
+After deployment, verify that `/api/health/` returns JSON `{"status":"ok"}`, `/api/auth/status/` returns JSON with `"authenticated": false` when signed out, and `/admin/login/` displays Django's admin login. A Vercel sign-in page or HTML response from an API path means Deployment Protection is still intercepting the request.
+
+## 5. Deploy, then initialize the database
 
 Deploy from the Vercel project page. After the environment variables are set, pull the Vercel environment into a local ignored file using the Vercel CLI (`vercel env pull .env.local`), then run these from this project folder with the same Python environment/dependencies:
 

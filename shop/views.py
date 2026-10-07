@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from django.apps import apps
@@ -13,6 +14,8 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET
 
 from .models import Order, Product
+
+logger = logging.getLogger("shop")
 
 FRONTEND_PAGES = {
     "index.html": "index.html",
@@ -85,14 +88,17 @@ def health(request):
             cursor.execute("SELECT 1")
             cursor.fetchone()
     except Exception:
+        logger.exception("Database health check could not connect to the database")
         return JsonResponse({"status": "unavailable", "check": "database"}, status=503)
 
     try:
         executor = MigrationExecutor(connection)
         pending_migrations = executor.migration_plan(executor.loader.graph.leaf_nodes())
     except Exception:
+        logger.exception("Database health check could not inspect migrations")
         return JsonResponse({"status": "unavailable", "check": "migrations"}, status=503)
     if pending_migrations:
+        logger.error("Database health check found pending migrations")
         return JsonResponse({"status": "unavailable", "check": "migrations"}, status=503)
 
     try:
@@ -104,7 +110,9 @@ def health(request):
             if model._meta.managed
         }
         if required_tables - existing_tables:
+            logger.error("Database health check found missing application tables")
             return JsonResponse({"status": "unavailable", "check": "schema"}, status=503)
     except Exception:
+        logger.exception("Database health check could not inspect the database schema")
         return JsonResponse({"status": "unavailable", "check": "database"}, status=503)
     return JsonResponse({"status": "ok"})
