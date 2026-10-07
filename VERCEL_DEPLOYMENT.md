@@ -18,7 +18,7 @@ In **Project → Settings → Environment Variables**, add these values. Mark se
 | --- | --- |
 | `DJANGO_SECRET_KEY` | A new random secret, at least 50 characters; do not reuse the local development key. |
 | `DJANGO_DEBUG` | `false` |
-| `DJANGO_SSL_REDIRECT` | `true` |
+| `DJANGO_SSL_REDIRECT` | `false` |
 | `DJANGO_TRUST_PROXY` | `true` |
 | `DJANGO_SITE_URL` | The public HTTPS URL for the live shop, such as `https://your-project.vercel.app`. |
 | `DJANGO_ALLOWED_HOSTS` | The hostname only, such as `your-project.vercel.app` (no `https://`). Add your custom domain too if you use one. |
@@ -35,6 +35,8 @@ In **Project → Settings → Environment Variables**, add these values. Mark se
 | `RAZORPAY_KEY_SECRET` | Matching Razorpay test secret. |
 
 Vercel's `VERCEL_URL` values are automatically allowed for Django host and CSRF checks. Keep `DJANGO_ALLOWED_HOSTS` and trusted origins limited to your own production/custom domains where possible.
+
+Vercel terminates public HTTPS at its edge. Keep Django's own HTTPS redirect disabled on Vercel to avoid redirect loops between the edge and the serverless function; `DJANGO_DEBUG=false` still keeps session and CSRF cookies secure, and production HSTS remains enabled.
 
 ## 4. Deploy, then initialize the database
 
