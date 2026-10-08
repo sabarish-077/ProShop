@@ -5,6 +5,7 @@ from unittest.mock import patch
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.db import DatabaseError
 from django.test import TestCase, override_settings
 from django.utils.crypto import get_random_string
 
@@ -190,6 +191,32 @@ class AccountApiTests(TestCase):
         self.assertEqual(self.register().status_code, 201)
         response = self.register()
         self.assertEqual(response.status_code, 409)
+
+    def test_expired_verification_token_is_reported(self):
+        response = self.register()
+        self.assertEqual(response.status_code, 201)
+        verify_url = next(
+            line for line in mail.outbox[0].body.splitlines()
+            if line.startswith("https://example.test/account.html?")
+        )
+        uid = parse_qs(urlparse(verify_url).query)["verify"][0]
+        response = self.client.post(
+            "/api/auth/verify/",
+            data=json.dumps({"uid": uid, "token": "invalid-token"}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["error"], "This verification link is invalid or has expired.")
+
+    @patch("shop.api.User.objects.get", side_effect=DatabaseError("database unavailable"))
+    def test_verification_database_error_is_reported_as_unavailable(self, _get_user):
+        response = self.client.post(
+            "/api/auth/verify/",
+            data=json.dumps({"uid": "MQ", "token": "token"}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["error"], "Account service is temporarily unavailable. Please try again.")
 
     def test_account_changes_require_csrf_token(self):
         csrf_client = self.client_class(enforce_csrf_checks=True)

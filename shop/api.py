@@ -173,15 +173,25 @@ def verify_email(request):
     try:
         payload = _json_body(request)
         uid = force_str(urlsafe_base64_decode(payload.get("uid", "")))
-        user = User.objects.get(pk=uid)
         token = payload.get("token", "")
-    except (ValueError, TypeError, UnicodeDecodeError, Base64Error, User.DoesNotExist, DatabaseError, json.JSONDecodeError):
+    except (ValueError, TypeError, UnicodeDecodeError, Base64Error, json.JSONDecodeError):
         return _error("This verification link is invalid or has expired.", 400)
+    try:
+        user = User.objects.get(pk=uid)
+    except User.DoesNotExist:
+        return _error("This verification link is invalid or has expired.", 400)
+    except DatabaseError:
+        logger.exception("Could not find account for email verification")
+        return _error("Account service is temporarily unavailable. Please try again.", 503)
     if not isinstance(token, str) or not default_token_generator.check_token(user, token):
         return _error("This verification link is invalid or has expired.", 400)
     if not user.is_active:
         user.is_active = True
-        user.save(update_fields=["is_active"])
+        try:
+            user.save(update_fields=["is_active"])
+        except DatabaseError:
+            logger.exception("Could not activate account after email verification")
+            return _error("Account service is temporarily unavailable. Please try again.", 503)
     return JsonResponse({"ok": True})
 
 

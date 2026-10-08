@@ -111,7 +111,15 @@
             window.history.replaceState({}, '', window.location.pathname);
             verifyPanel.classList.add('d-none');
             showMessage('Your email is verified. You can now sign in.');
-        } catch (error) { showMessage(error.message, true); }
+        } catch (error) {
+            if (error.message === 'This verification link is invalid or has expired.') {
+                verifyPanel.classList.add('d-none');
+                resendPanel.classList.remove('d-none');
+                showMessage('This verification link is invalid or has expired. Request a new link below.', true);
+            } else {
+                showMessage(error.message, true);
+            }
+        }
     });
 
     document.getElementById('resend-form').addEventListener('submit', async event => {
