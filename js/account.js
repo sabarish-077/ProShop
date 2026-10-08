@@ -6,6 +6,10 @@
     const registerForm = document.getElementById('register-form');
     const verifyPanel = document.getElementById('verify-panel');
     const resendPanel = document.getElementById('resend-panel');
+    const passwordResetRequestPanel = document.getElementById('password-reset-request-panel');
+    const passwordResetPanel = document.getElementById('password-reset-panel');
+    const passwordResetRequestForm = document.getElementById('password-reset-request-form');
+    const passwordResetForm = document.getElementById('password-reset-form');
     const verifyParams = new URLSearchParams(window.location.search);
 
     function csrfToken() {
@@ -90,6 +94,54 @@
         } catch (error) { showMessage(error.message, true); }
     });
 
+    document.getElementById('forgot-password-link').addEventListener('click', () => {
+        passwordResetRequestForm.elements.email.value = loginForm.elements.email.value;
+        authPanel.classList.add('d-none');
+        passwordResetRequestPanel.classList.remove('d-none');
+        message.className = 'alert d-none';
+    });
+
+    document.getElementById('back-to-signin-button').addEventListener('click', () => {
+        passwordResetRequestPanel.classList.add('d-none');
+        authPanel.classList.remove('d-none');
+        message.className = 'alert d-none';
+    });
+
+    passwordResetRequestForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!passwordResetRequestForm.reportValidity()) return;
+        try {
+            const result = await api('/api/auth/password-reset/request/', Object.fromEntries(new FormData(passwordResetRequestForm)));
+            showMessage(result.message);
+        } catch (error) {
+            showMessage(error.message || 'Password reset is temporarily unavailable. Please try again.', true);
+        }
+    });
+
+    passwordResetForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!passwordResetForm.reportValidity()) return;
+        const formData = new FormData(passwordResetForm);
+        if (formData.get('password') !== formData.get('confirm_password')) {
+            showMessage('The passwords do not match.', true);
+            return;
+        }
+        try {
+            const result = await api('/api/auth/password-reset/confirm/', {
+                uid: verifyParams.get('reset_uid'),
+                token: verifyParams.get('reset_token'),
+                password: formData.get('password')
+            });
+            passwordResetPanel.classList.add('d-none');
+            authPanel.classList.remove('d-none');
+            passwordResetForm.reset();
+            window.history.replaceState({}, '', window.location.pathname);
+            showMessage(result.message);
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    });
+
     registerForm.addEventListener('submit', async event => {
         event.preventDefault();
         if (!registerForm.reportValidity()) return;
@@ -138,12 +190,20 @@
         } catch (error) { showMessage(error.message, true); }
     });
 
-    if (verifyParams.has('verify') && verifyParams.has('token')) {
+    const hasPasswordResetLink = verifyParams.has('reset_uid') && verifyParams.has('reset_token');
+    const hasEmailVerificationLink = verifyParams.has('verify') && verifyParams.has('token');
+    if (hasPasswordResetLink) {
+        authPanel.classList.add('d-none');
+        passwordResetPanel.classList.remove('d-none');
+        showMessage('Choose a new password. This link expires after one hour.');
+    } else if (hasEmailVerificationLink) {
         authPanel.classList.add('d-none');
         verifyPanel.classList.remove('d-none');
         showMessage('Confirm that you want to verify this email address.');
     }
-    api('/api/auth/status/').then(result => {
-        if (result.authenticated) return showAccount(result.user);
-    }).catch(() => showMessage('Account service is temporarily unavailable.', true));
+    if (!hasPasswordResetLink && !hasEmailVerificationLink) {
+        api('/api/auth/status/').then(result => {
+            if (result.authenticated) return showAccount(result.user);
+        }).catch(() => showMessage('Account service is temporarily unavailable.', true));
+    }
 })();

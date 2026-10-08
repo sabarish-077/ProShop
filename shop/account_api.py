@@ -139,6 +139,76 @@ def resend_verification(request):
 
 
 @require_POST
+def password_reset_request(request):
+    """Send a short-lived reset link without revealing whether an account exists."""
+    generic_response = JsonResponse({
+        "ok": True,
+        "message": "If an active account matches that email, a password reset link will be sent shortly.",
+    })
+    try:
+        payload = _json_body(request)
+        email = str(payload.get("email", "")).strip().lower()
+        validate_email(email)
+        if len(email) > 150:
+            return generic_response
+        user = User.objects.filter(email=email, is_active=True).first()
+        if user is None:
+            return generic_response
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        query = urlencode({"reset_uid": uid, "reset_token": token})
+        reset_url = f"{settings.SITE_URL.rstrip('/')}/account.html?{query}"
+        send_mail(
+            "Reset your ProShop password",
+            f"Hello {user.first_name or 'there'},\n\nUse this link within one hour to choose a new password:\n{reset_url}\n\nIf you did not request this, you can ignore this email.",
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+    except (ValueError, UnicodeDecodeError, json.JSONDecodeError, ValidationError):
+        return generic_response
+    except DatabaseError:
+        logger.exception("Password reset request could not access the account database")
+        return _error("Password reset is temporarily unavailable. Please try again.", 503)
+    except Exception:
+        logger.exception("Could not send password reset email")
+    return generic_response
+
+
+@require_POST
+def password_reset_confirm(request):
+    try:
+        payload = _json_body(request)
+        uid = force_str(urlsafe_base64_decode(payload.get("uid", "")))
+        token = payload.get("token", "")
+        password = payload.get("password", "")
+    except (ValueError, TypeError, UnicodeDecodeError, Base64Error, json.JSONDecodeError):
+        return _error("This password reset link is invalid or has expired.", 400)
+    if not isinstance(token, str) or not isinstance(password, str) or not password or len(password) > 256:
+        return _error("Enter a valid new password.", 400)
+    try:
+        user = User.objects.get(pk=uid, is_active=True)
+    except User.DoesNotExist:
+        return _error("This password reset link is invalid or has expired.", 400)
+    except DatabaseError:
+        logger.exception("Password reset could not access the account database")
+        return _error("Password reset is temporarily unavailable. Please try again.", 503)
+    if not default_token_generator.check_token(user, token):
+        return _error("This password reset link is invalid or has expired.", 400)
+    try:
+        validate_password(password, user)
+    except ValidationError as exc:
+        return _error(" ".join(exc.messages), 400)
+    try:
+        user.set_password(password)
+        user.save(update_fields=["password"])
+    except DatabaseError:
+        logger.exception("Password reset could not save the new password")
+        return _error("Password reset is temporarily unavailable. Please try again.", 503)
+    return JsonResponse({"ok": True, "message": "Your password has been reset. You can sign in now."})
+
+
+@require_POST
 def login_view(request):
     try:
         payload = _json_body(request)

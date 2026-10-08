@@ -244,6 +244,68 @@ class AccountApiTests(TestCase):
         )
         self.assertEqual(response.status_code, 403)
 
+    def test_password_reset_link_sets_new_password_and_cannot_be_reused(self):
+        user = get_user_model().objects.create_user(
+            username="reset@example.test",
+            email="reset@example.test",
+            password="Old-Strong-Password-2026!",
+            is_active=True,
+        )
+        response = self.client.post(
+            "/api/auth/password-reset/request/",
+            data=json.dumps({"email": user.email}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["message"], "If an active account matches that email, a password reset link will be sent shortly.")
+        self.assertEqual(len(mail.outbox), 1)
+        reset_url = next(line for line in mail.outbox[0].body.splitlines() if "/account.html?reset_uid=" in line)
+        query = parse_qs(urlparse(reset_url).query)
+        reset_data = {
+            "uid": query["reset_uid"][0],
+            "token": query["reset_token"][0],
+            "password": "New-Strong-Password-2026!",
+        }
+
+        response = self.client.post(
+            "/api/auth/password-reset/confirm/",
+            data=json.dumps(reset_data),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        response = self.client.post(
+            "/api/auth/login/",
+            data=json.dumps({"email": user.email, "password": reset_data["password"]}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.client.post("/api/auth/logout/")
+
+        response = self.client.post(
+            "/api/auth/password-reset/confirm/",
+            data=json.dumps(reset_data),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_password_reset_request_does_not_reveal_unknown_email(self):
+        response = self.client.post(
+            "/api/auth/password-reset/request/",
+            data=json.dumps({"email": "unknown@example.test"}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["message"], "If an active account matches that email, a password reset link will be sent shortly.")
+        self.assertEqual(mail.outbox, [])
+
+    def test_password_reset_endpoints_require_csrf(self):
+        csrf_client = self.client_class(enforce_csrf_checks=True)
+        payload = json.dumps({"email": "tester@example.test"})
+        response = csrf_client.post(
+            "/api/auth/password-reset/request/", data=payload, content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 403)
+
 
 class CheckoutAccessTests(TestCase):
     def test_orders_and_payment_require_authentication(self):
