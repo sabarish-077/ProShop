@@ -46,6 +46,8 @@ Set `DJANGO_SITE_URL` to the public production URL. Django includes that URL's h
 
 After deployment, verify that `/api/health/` returns JSON `{"status":"ok"}`, `/api/auth/status/` returns JSON with `"authenticated": false` when signed out, and `/admin/login/` displays Django's admin login. A Vercel sign-in page or HTML response from an API path means Deployment Protection is still intercepting the request.
 
+Email verification links use Django's default three-day token lifetime. Links also become invalid if the account database or `DJANGO_SECRET_KEY` changes; open the account page again and use **Send a new link** for an unverified account.
+
 ## 5. Deploy, then initialize the database
 
 Deploy from the Vercel project page. After the environment variables are set, pull the Vercel environment into a local ignored file using the Vercel CLI (`vercel env pull .env.local`), then run these from this project folder with the same Python environment/dependencies:
