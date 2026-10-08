@@ -2,6 +2,8 @@
 
 ProShop is a Django shop with a SQL catalog and order database, account sign-in, and a lightweight storefront.
 
+The backend keeps the existing database schema and API URLs. Its API code is separated by responsibility: account flows, product catalog, and checkout/payment. `shop/api.py` remains as a compatibility layer for the existing URL configuration.
+
 ## Run locally
 
 1. Use Python 3.10 or newer.

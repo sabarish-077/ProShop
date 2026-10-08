@@ -1,7 +1,8 @@
-Django>=5.2,<5.3
-django-axes>=8.0,<9.0
-whitenoise>=6.9,<7.0
-psycopg[binary]>=3.2,<4.0
-gunicorn>=23,<24
-python-dotenv>=1.0,<2.0
-requests>=2.32,<3.0
+# Keep runtime and migration behavior consistent between local and Vercel builds.
+Django==5.2.17
+django-axes==8.3.1
+whitenoise==6.12.0
+psycopg[binary]==3.3.6
+gunicorn==23.0.0
+python-dotenv==1.2.3
+requests==2.32.5
