@@ -9,9 +9,10 @@ import requests
 from django.conf import settings
 from django.db import DatabaseError, transaction
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from .api_common import _error, _json_body
 from .models import Order, OrderItem, Product
@@ -40,20 +41,44 @@ def _razorpay_client():
     return (key_id, key_secret), key_id
 
 
-def _order_json(order):
-    return {
+def _order_json(order, include_delivery=False):
+    result = {
         "reference": order.reference,
         "status": order.status,
         "payment_method": order.payment_method,
         "razorpay_order_id": order.razorpay_order_id,
+        "subtotal": str(order.subtotal),
+        "discount": str(order.discount),
+        "tax": str(order.tax),
         "total": str(order.total),
         "gift_packaging": order.gift_packaging,
         "gift_wrap_cost": str(order.gift_wrap_cost),
         "promo_code": order.promo_code,
         "created_at": order.created_at.isoformat(),
         "items": [{"title": item.title_snapshot, "quantity": item.quantity,
-                   "unit_price": str(item.unit_price)} for item in order.items.all()],
+                   "unit_price": str(item.unit_price),
+                   "protection_plan_cost": str(item.protection_plan_cost)} for item in order.items.all()],
     }
+    if include_delivery:
+        result["delivery"] = {
+            "recipient_name": order.recipient_name,
+            "address": order.address,
+            "city": order.city,
+            "region": order.region,
+            "postal_code": order.postal_code,
+        }
+    return result
+
+
+def _restore_order_stock(order):
+    for item in order.items.all():
+        product = Product.objects.select_for_update().filter(pk=item.product_id).first()
+        if product is None:
+            continue
+        stock = _available_stock(product) + item.quantity
+        product.catalog_data = {**(product.catalog_data or {}), "stock": stock}
+        product.in_stock = stock > 0
+        product.save(update_fields=["catalog_data", "in_stock", "updated_at"])
 
 
 def _release_expired_orders():
@@ -63,14 +88,7 @@ def _release_expired_orders():
         created_at__lt=timezone.now() - timedelta(hours=1),
     ).prefetch_related("items")[:200])
     for stale in stale_orders:
-        for item in stale.items.all():
-            product = Product.objects.select_for_update().filter(pk=item.product_id).first()
-            if product is None:
-                continue
-            stock = _available_stock(product) + item.quantity
-            product.catalog_data = {**(product.catalog_data or {}), "stock": stock}
-            product.in_stock = stock > 0
-            product.save(update_fields=["catalog_data", "in_stock", "updated_at"])
+        _restore_order_stock(stale)
         stale.status = Order.Status.CANCELLED
         stale.save(update_fields=["status"])
 
@@ -89,6 +107,84 @@ def orders(request):
     except DatabaseError:
         logger.exception("Could not read orders for user %s", request.user.pk)
         return _error("Your orders are temporarily unavailable. Please try again.", 503)
+
+
+@never_cache
+@require_GET
+def order_detail(request, reference):
+    if not request.user.is_authenticated:
+        return _error("Please sign in to view this order.", 401)
+    try:
+        order = get_object_or_404(
+            Order.objects.prefetch_related("items"),
+            user=request.user,
+            reference=reference,
+        )
+        return JsonResponse({"order": _order_json(order, include_delivery=True)})
+    except DatabaseError:
+        logger.exception("Could not read order details for user %s", request.user.pk)
+        return _error("Order details are temporarily unavailable. Please try again.", 503)
+
+
+@require_POST
+def update_order_delivery(request, reference):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return _error("Please sign in to edit this order.", 401)
+    try:
+        payload = _json_body(request)
+    except (ValueError, UnicodeDecodeError, json.JSONDecodeError):
+        return _error("Check the delivery details and try again.")
+    field_limits = {"recipient_name": 150, "address": 300, "city": 120, "region": 120, "postal_code": 24}
+    delivery = {}
+    for field, limit in field_limits.items():
+        value = payload.get(field)
+        if not isinstance(value, str):
+            return _error("Complete each delivery detail.")
+        value = value.strip()
+        if not value or len(value) > limit:
+            return _error("Complete each delivery detail with valid information.")
+        delivery[field] = value
+    try:
+        with transaction.atomic():
+            order = Order.objects.select_for_update().filter(
+                user=request.user, reference=reference
+            ).first()
+            if order is None:
+                return _error("Order not found.", 404)
+            if (order.payment_method != Order.PaymentMethod.CASH_ON_DELIVERY
+                    or order.status != Order.Status.COD_PENDING):
+                return _error("Only unpaid COD orders can be edited.", 409)
+            for field, value in delivery.items():
+                setattr(order, field, value)
+            order.save(update_fields=list(delivery))
+        return JsonResponse({"ok": True, "order": _order_json(order, include_delivery=True)})
+    except DatabaseError:
+        logger.exception("Could not update order delivery for user %s", request.user.pk)
+        return _error("This order could not be updated right now. Please try again.", 503)
+
+
+@require_POST
+def cancel_order(request, reference):
+    if not request.user.is_authenticated or not request.user.is_active:
+        return _error("Please sign in to cancel this order.", 401)
+    try:
+        with transaction.atomic():
+            order = Order.objects.select_for_update().filter(
+                user=request.user, reference=reference
+            ).first()
+            if order is None:
+                return _error("Order not found.", 404)
+            if (order.payment_method != Order.PaymentMethod.CASH_ON_DELIVERY
+                    or order.status != Order.Status.COD_PENDING):
+                return _error("Only unpaid COD orders can be cancelled online.", 409)
+            order = Order.objects.prefetch_related("items").get(pk=order.pk)
+            _restore_order_stock(order)
+            order.status = Order.Status.CANCELLED
+            order.save(update_fields=["status"])
+        return JsonResponse({"ok": True, "order": _order_json(order, include_delivery=True)})
+    except DatabaseError:
+        logger.exception("Could not cancel order for user %s", request.user.pk)
+        return _error("This order could not be cancelled right now. Please try again.", 503)
 
 
 @require_POST

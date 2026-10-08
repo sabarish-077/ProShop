@@ -13,7 +13,7 @@ from django.utils.crypto import get_random_string
 
 from proshop_site.settings import _database_url_from_environment
 
-from .models import Order, Product
+from .models import Order, OrderItem, Product
 
 
 class PublicPageTests(TestCase):
@@ -44,7 +44,7 @@ class PublicPageTests(TestCase):
         self.assertIn(site_host, settings.ALLOWED_HOSTS)
 
     def test_store_pages_load(self):
-        for path in ("/", "/shop.html", "/product.html", "/cart.html", "/account.html"):
+        for path in ("/", "/shop.html", "/product.html", "/cart.html", "/account.html", "/order.html"):
             with self.subTest(path=path):
                 response = self.client.get(path)
                 self.assertEqual(response.status_code, 200)
@@ -358,3 +358,93 @@ class CashOnDeliveryTests(TestCase):
         razorpay_post.assert_not_called()
         product.refresh_from_db()
         self.assertEqual(product.catalog_data["stock"], 1)
+
+
+class CustomerOrderManagementTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="order-customer@example.test",
+            email="order-customer@example.test",
+            password="Strong-Test-Password-2026!",
+            is_active=True,
+        )
+        self.product = Product.objects.create(
+            id="order-management-test",
+            title="Order management item",
+            brand="Test",
+            department="Electronics",
+            price="1200.00",
+            in_stock=False,
+            catalog_data={"stock": 0},
+        )
+        self.order = Order.objects.create(
+            user=self.user,
+            status=Order.Status.COD_PENDING,
+            payment_method=Order.PaymentMethod.CASH_ON_DELIVERY,
+            recipient_name="Order Customer",
+            address="1 Main Street",
+            city="Chennai",
+            region="Tamil Nadu",
+            postal_code="600001",
+            subtotal="1200.00",
+            discount="0.00",
+            tax="99.00",
+            total="1299.00",
+        )
+        OrderItem.objects.create(
+            order=self.order,
+            product=self.product,
+            product_id_snapshot=self.product.pk,
+            title_snapshot=self.product.title,
+            unit_price=self.product.price,
+            quantity=1,
+        )
+        self.client.force_login(self.user)
+
+    def test_customer_can_view_only_their_order_details(self):
+        response = self.client.get(f"/api/orders/{self.order.reference}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["order"]["delivery"]["address"], "1 Main Street")
+        self.assertEqual(response.json()["order"]["items"][0]["title"], "Order management item")
+        other_user = get_user_model().objects.create_user(
+            username="other-order-customer@example.test",
+            email="other-order-customer@example.test",
+            password="Strong-Test-Password-2026!",
+            is_active=True,
+        )
+        self.client.force_login(other_user)
+        response = self.client.get(f"/api/orders/{self.order.reference}/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_customer_can_edit_cod_delivery_details(self):
+        response = self.client.post(
+            f"/api/orders/{self.order.reference}/delivery/",
+            data=json.dumps({
+                "recipient_name": "Updated Recipient",
+                "address": "2 New Street",
+                "city": "Coimbatore",
+                "region": "Tamil Nadu",
+                "postal_code": "641001",
+            }),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.order.refresh_from_db()
+        self.assertEqual(self.order.recipient_name, "Updated Recipient")
+        self.assertEqual(self.order.address, "2 New Street")
+
+    def test_customer_can_cancel_cod_order_and_reserved_stock_is_restored(self):
+        response = self.client.post(f"/api/orders/{self.order.reference}/cancel/")
+        self.assertEqual(response.status_code, 200, response.content)
+        self.order.refresh_from_db()
+        self.product.refresh_from_db()
+        self.assertEqual(self.order.status, Order.Status.CANCELLED)
+        self.assertEqual(self.product.catalog_data["stock"], 1)
+        self.assertTrue(self.product.in_stock)
+
+    def test_paid_online_orders_cannot_be_customer_cancelled(self):
+        self.order.payment_method = Order.PaymentMethod.RAZORPAY
+        self.order.status = Order.Status.CONFIRMED
+        self.order.save(update_fields=["payment_method", "status"])
+        response = self.client.post(f"/api/orders/{self.order.reference}/cancel/")
+        self.assertEqual(response.status_code, 409)

@@ -20,6 +20,9 @@ urlpatterns = [
     path("api/auth/login/", api.login_view, name="login"),
     path("api/auth/logout/", api.logout_view, name="logout"),
     path("api/orders/", require_http_methods(["GET", "POST"])(api.orders), name="orders"),
+    path("api/orders/<str:reference>/", api.order_detail, name="order-detail"),
+    path("api/orders/<str:reference>/delivery/", api.update_order_delivery, name="order-delivery"),
+    path("api/orders/<str:reference>/cancel/", api.cancel_order, name="order-cancel"),
     path("api/payments/razorpay/verify/", api.verify_payment, name="verify-payment"),
     path("", views.home, name="home"),
     path("index.html", views.home, name="home-page"),
@@ -27,6 +30,7 @@ urlpatterns = [
     path("product.html", views.product_page, name="product-page"),
     path("cart.html", views.cart_page, name="cart-page"),
     path("account.html", views.account_page, name="account-page"),
+    path("order.html", views.order_page, name="order-page"),
     re_path(r"^admin-dashboard/\*+/?$", RedirectView.as_view(url="/admin-dashboard/", permanent=False)),
     path("admin-dashboard/", views.admin_dashboard, name="admin-dashboard"),
 ]

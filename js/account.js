@@ -22,6 +22,13 @@
         message.className = `alert ${isError ? 'alert-danger' : 'alert-success'}`;
     }
 
+    function setAdminLoginVisibility(isAuthenticated) {
+        document.querySelectorAll('.admin-login-button').forEach(link => {
+            link.hidden = isAuthenticated;
+            link.classList.toggle('d-none', isAuthenticated);
+        });
+    }
+
     async function api(path, payload) {
         const response = await fetch(path, {
             method: payload ? 'POST' : 'GET',
@@ -36,7 +43,7 @@
 
     function nextPage() {
         const next = new URLSearchParams(window.location.search).get('next');
-        return ['cart.html', 'shop.html', 'index.html'].includes(next) ? next : 'index.html';
+        return ['cart.html', 'shop.html', 'index.html', 'order.html'].includes(next) ? next : 'index.html';
     }
 
     async function loadOrders() {
@@ -59,7 +66,11 @@
                 const detail = document.createElement('div');
                 detail.className = 'small text-muted mt-1';
                 detail.textContent = `${order.items.map(item => `${item.quantity} × ${item.title}`).join(', ')} · ₹${Number(order.total).toLocaleString('en-IN')}`;
-                row.append(title, detail);
+                const viewLink = document.createElement('a');
+                viewLink.className = 'btn btn-sm btn-outline-secondary mt-2';
+                viewLink.href = `/order.html?reference=${encodeURIComponent(order.reference)}`;
+                viewLink.textContent = 'View order';
+                row.append(title, detail, viewLink);
                 list.append(row);
             }
         } catch {
@@ -203,6 +214,7 @@
     }
     if (!hasPasswordResetLink && !hasEmailVerificationLink) {
         api('/api/auth/status/').then(result => {
+            setAdminLoginVisibility(result.authenticated);
             if (result.authenticated) return showAccount(result.user);
         }).catch(() => showMessage('Account service is temporarily unavailable.', true));
     }

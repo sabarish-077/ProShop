@@ -45,13 +45,18 @@ function showCatalogUnavailableNotice() {
 
 function initAccountLinks() {
     const label = document.querySelector('.account-link-label');
-    if (!label) return;
+    const adminLoginLinks = document.querySelectorAll('.admin-login-button');
+    if (!label && adminLoginLinks.length === 0) return;
     fetch('/api/auth/status/', { credentials: 'same-origin' })
         .then(response => response.ok ? response.json() : Promise.reject())
         .then(result => {
-            label.textContent = result.authenticated ? (result.user.name || 'My account') : 'Sign in';
+            if (label) label.textContent = result.authenticated ? (result.user.name || 'My account') : 'Sign in';
+            adminLoginLinks.forEach(link => {
+                link.hidden = result.authenticated;
+                link.classList.toggle('d-none', result.authenticated);
+            });
         })
-        .catch(() => { label.textContent = 'Account'; });
+        .catch(() => { if (label) label.textContent = 'Account'; });
 }
 
 /* ==========================================================================

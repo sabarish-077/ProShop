@@ -23,6 +23,7 @@ FRONTEND_PAGES = {
     "product.html": "product.html",
     "cart.html": "cart.html",
     "account.html": "account.html",
+    "order.html": "order.html",
 }
 
 
@@ -54,6 +55,10 @@ def cart_page(request):
 
 def account_page(request):
     return serve_page(request, FRONTEND_PAGES["account.html"])
+
+
+def order_page(request):
+    return serve_page(request, FRONTEND_PAGES["order.html"])
 
 
 @staff_member_required(login_url="/admin/login/")
