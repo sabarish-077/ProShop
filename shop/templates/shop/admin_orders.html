@@ -1,0 +1,25 @@
+{% extends "shop/admin_resource_base.html" %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<div class="resource-heading"><div><span class="dashboard-eyebrow">ORDER MANAGEMENT</span><h1>Orders</h1><p>Update delivery details and COD status. Online payment records are protected from manual changes here.</p></div></div>
+<section class="resource-panel"><div class="table-scroll"><table class="resource-table"><thead><tr><th>ORDER / CUSTOMER</th><th>ITEMS</th><th>TOTAL / PAYMENT</th><th>STATUS</th><th>COD ACTIONS</th></tr></thead><tbody>
+{% for order in orders %}<tr>
+  <td><strong>{{ order.reference }}</strong><br>{{ order.user.email }}<br><small>{{ order.created_at|date:"M j, Y H:i" }}</small></td>
+  <td>{% for item in order.items.all %}{{ item.title_snapshot }} × {{ item.quantity }}{% if not forloop.last %}<br>{% endif %}{% empty %}No item details{% endfor %}</td>
+  <td>₹{{ order.total|floatformat:2 }}<br>{{ order.get_payment_method_display }}</td>
+  <td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+  <td>{% if order.payment_method == "cod" and order.status == "cod_pending" %}
+    <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="reference" value="{{ order.reference }}"><input type="hidden" name="action" value="save_delivery">
+      <input name="recipient_name" aria-label="Recipient name" value="{{ order.recipient_name }}" placeholder="Recipient" required maxlength="150">
+      <input name="address" aria-label="Address" value="{{ order.address }}" placeholder="Address" required maxlength="300">
+      <input name="city" aria-label="City" value="{{ order.city }}" placeholder="City" required maxlength="120">
+      <input name="region" aria-label="State or region" value="{{ order.region }}" placeholder="State" required maxlength="120">
+      <input name="postal_code" aria-label="Postal code" value="{{ order.postal_code }}" placeholder="PIN code" required maxlength="24">
+      <button class="resource-button" type="submit">Save delivery</button>
+    </form>
+    <div class="resource-actions"><form method="post">{% csrf_token %}<input type="hidden" name="reference" value="{{ order.reference }}"><input type="hidden" name="action" value="mark_paid"><button class="resource-button secondary" type="submit">Mark collected</button></form>
+    <form method="post" onsubmit="return confirm('Cancel this COD order and return its reserved stock?')">{% csrf_token %}<input type="hidden" name="reference" value="{{ order.reference }}"><input type="hidden" name="action" value="cancel"><button class="resource-button danger" type="submit">Cancel order</button></form></div>
+  {% else %}<small>Order actions are locked for this payment/status. Use the detail view in store admin if needed.</small><div class="resource-actions"><a class="resource-link secondary" href="{% url 'admin:shop_order_change' order.pk %}">View details</a></div>{% endif %}</td>
+</tr>{% empty %}<tr><td colspan="5">No orders yet.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

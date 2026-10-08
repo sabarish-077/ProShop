@@ -1,0 +1,8 @@
+{% extends "shop/admin_resource_base.html" %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+<div class="resource-heading"><div><span class="dashboard-eyebrow">CUSTOMER ACCOUNTS</span><h1>Customers</h1><p>Review customer contact information and their order history.</p></div></div>
+<section class="resource-panel"><div class="table-scroll"><table class="resource-table"><thead><tr><th>CUSTOMER</th><th>EMAIL</th><th>JOINED</th><th>ORDERS</th><th></th></tr></thead><tbody>
+{% for customer in customers %}<tr><td><strong>{{ customer.get_full_name|default:customer.username }}</strong></td><td>{{ customer.email|default:"—" }}</td><td>{{ customer.date_joined|date:"M j, Y" }}</td><td>{{ customer.orders_count }}</td><td><a class="resource-link secondary" href="{% url 'admin-dashboard-customer-detail' customer.pk %}">View details</a></td></tr>{% empty %}<tr><td colspan="5">No customer accounts found.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

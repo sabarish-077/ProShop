@@ -116,6 +116,109 @@ class HealthCheckTests(TestCase):
         self.assertEqual(response.json(), {"status": "unavailable", "check": "database"})
 
 
+class StaffDashboardManagementTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User = get_user_model()
+        cls.staff = User.objects.create_user(
+            username="management-staff", password="Strong-Test-Password-2026!", is_staff=True
+        )
+        cls.customer = User.objects.create_user(
+            username="management-customer", email="customer@example.test", password="Strong-Test-Password-2026!"
+        )
+        cls.product = Product.objects.create(
+            id="management-product", title="Management Product", brand="Test", department="Home",
+            price="100.00", in_stock=True, catalog_data={"stock": 3},
+        )
+        cls.cod_order = Order.objects.create(
+            user=cls.customer, status=Order.Status.COD_PENDING,
+            payment_method=Order.PaymentMethod.CASH_ON_DELIVERY,
+            recipient_name="Customer", address="1 Main Street", city="Chennai", region="Tamil Nadu",
+            postal_code="600001", subtotal="200.00", total="200.00",
+        )
+        OrderItem.objects.create(
+            order=cls.cod_order, product=cls.product, product_id_snapshot=cls.product.pk,
+            title_snapshot=cls.product.title, unit_price="100.00", quantity=2,
+        )
+        cls.online_order = Order.objects.create(
+            user=cls.customer, status=Order.Status.PENDING, payment_method=Order.PaymentMethod.RAZORPAY,
+            recipient_name="Customer", address="1 Main Street", city="Chennai", region="Tamil Nadu",
+            postal_code="600001", subtotal="100.00", total="100.00",
+        )
+
+    def setUp(self):
+        self.client.force_login(self.staff)
+
+    def test_dashboard_sections_require_staff(self):
+        self.client.logout()
+        for path in (
+            "/admin-dashboard/orders/", "/admin-dashboard/products/",
+            "/admin-dashboard/customers/", f"/admin-dashboard/customers/{self.customer.pk}/",
+        ):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(response.url.startswith("/admin/login/?next="))
+
+    def test_staff_can_view_management_pages_and_customer_details(self):
+        for path, expected in (
+            ("/admin-dashboard/orders/", "ORDER MANAGEMENT"),
+            ("/admin-dashboard/products/", "CATALOG MANAGEMENT"),
+            ("/admin-dashboard/customers/", "CUSTOMER ACCOUNTS"),
+            (f"/admin-dashboard/customers/{self.customer.pk}/", "customer@example.test"),
+        ):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, expected)
+
+    def test_staff_can_update_product_stock_and_zero_marks_out_of_stock(self):
+        response = self.client.post("/admin-dashboard/products/", {
+            "product_id": self.product.pk, "stock": "0",
+        })
+        self.assertRedirects(response, "/admin-dashboard/products/", fetch_redirect_response=False)
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.catalog_data["stock"], 0)
+        self.assertFalse(self.product.in_stock)
+
+    def test_staff_can_edit_cod_delivery_details_and_mark_collected(self):
+        response = self.client.post("/admin-dashboard/orders/", {
+            "reference": self.cod_order.reference, "action": "save_delivery",
+            "recipient_name": "Updated Customer", "address": "2 Main Street",
+            "city": "Chennai", "region": "Tamil Nadu", "postal_code": "600002",
+        })
+        self.assertRedirects(response, "/admin-dashboard/orders/", fetch_redirect_response=False)
+        self.cod_order.refresh_from_db()
+        self.assertEqual(self.cod_order.address, "2 Main Street")
+        self.assertEqual(self.cod_order.postal_code, "600002")
+
+        self.client.post("/admin-dashboard/orders/", {
+            "reference": self.cod_order.reference, "action": "mark_paid",
+        })
+        self.cod_order.refresh_from_db()
+        self.assertEqual(self.cod_order.status, Order.Status.CONFIRMED)
+
+    def test_cancelling_cod_returns_reserved_stock_once(self):
+        for _ in range(2):
+            self.client.post("/admin-dashboard/orders/", {
+                "reference": self.cod_order.reference, "action": "cancel",
+            })
+        self.product.refresh_from_db()
+        self.cod_order.refresh_from_db()
+        self.assertEqual(self.product.catalog_data["stock"], 5)
+        self.assertEqual(self.cod_order.status, Order.Status.CANCELLED)
+
+    def test_admin_cannot_cancel_online_payment_or_restore_its_stock(self):
+        response = self.client.post("/admin-dashboard/orders/", {
+            "reference": self.online_order.reference, "action": "cancel",
+        })
+        self.assertRedirects(response, "/admin-dashboard/orders/", fetch_redirect_response=False)
+        self.online_order.refresh_from_db()
+        self.product.refresh_from_db()
+        self.assertEqual(self.online_order.status, Order.Status.PENDING)
+        self.assertEqual(self.product.catalog_data["stock"], 3)
+
+
 class ProductApiTests(TestCase):
     @classmethod
     def setUpTestData(cls):

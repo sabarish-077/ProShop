@@ -3,7 +3,7 @@ from django.urls import path, re_path
 from django.views.generic.base import RedirectView
 from django.views.decorators.http import require_http_methods
 
-from shop import api, views
+from shop import admin_views, api, views
 
 urlpatterns = [
     path("admin/login/", views.staff_admin_login, name="staff-admin-login"),
@@ -32,5 +32,9 @@ urlpatterns = [
     path("account.html", views.account_page, name="account-page"),
     path("order.html", views.order_page, name="order-page"),
     re_path(r"^admin-dashboard/\*+/?$", RedirectView.as_view(url="/admin-dashboard/", permanent=False)),
+    path("admin-dashboard/orders/", admin_views.manage_orders, name="admin-dashboard-orders"),
+    path("admin-dashboard/products/", admin_views.manage_products, name="admin-dashboard-products"),
+    path("admin-dashboard/customers/", admin_views.manage_customers, name="admin-dashboard-customers"),
+    path("admin-dashboard/customers/<int:user_id>/", admin_views.customer_detail, name="admin-dashboard-customer-detail"),
     path("admin-dashboard/", views.admin_dashboard, name="admin-dashboard"),
 ]

@@ -13,6 +13,9 @@
   <header class="dashboard-topbar">
     <a class="dashboard-brand" href="/">PROSHOP <span>STORE ADMIN</span></a>
     <nav aria-label="Admin navigation">
+      <a href="{% url 'admin-dashboard-orders' %}"><i class="bi bi-receipt"></i> Orders</a>
+      <a href="{% url 'admin-dashboard-products' %}"><i class="bi bi-box-seam"></i> Products & stock</a>
+      <a href="{% url 'admin-dashboard-customers' %}"><i class="bi bi-people"></i> Customers</a>
       <a href="{% url 'admin:index' %}"><i class="bi bi-sliders"></i> Manage store</a>
       <form action="/admin/logout/" method="post" class="dashboard-signout-form">
         {% csrf_token %}
@@ -23,7 +26,7 @@
   <main class="dashboard-main">
     <div class="dashboard-heading">
       <div><span class="dashboard-eyebrow">OVERVIEW</span><h1>Store dashboard</h1><p>Welcome, {{ request.user.get_short_name|default:request.user.username }}. Here is the latest store activity.</p></div>
-      <a class="dashboard-primary" href="{% url 'admin:index' %}"><i class="bi bi-arrow-up-right-square"></i> Open store management</a>
+      <a class="dashboard-primary" href="{% url 'admin-dashboard-orders' %}"><i class="bi bi-receipt"></i> Manage orders</a>
     </div>
 
     <section class="dashboard-stats" aria-label="Store summary">
@@ -35,18 +38,18 @@
 
     <section class="dashboard-columns">
       <article class="dashboard-panel orders-panel">
-        <div class="panel-heading"><div><span class="dashboard-eyebrow">LATEST ACTIVITY</span><h2>Recent orders</h2></div><a href="{% url 'admin:shop_order_changelist' %}">View all <i class="bi bi-arrow-right"></i></a></div>
+        <div class="panel-heading"><div><span class="dashboard-eyebrow">LATEST ACTIVITY</span><h2>Recent orders</h2></div><a href="{% url 'admin-dashboard-orders' %}">Edit orders <i class="bi bi-arrow-right"></i></a></div>
         {% if recent_orders %}
         <div class="table-scroll"><table><thead><tr><th>ORDER</th><th>CUSTOMER</th><th>DATE</th><th>AMOUNT</th><th>PAYMENT</th><th>STATUS</th></tr></thead><tbody>
           {% for order in recent_orders %}
-          <tr><td><a class="order-reference" href="{% url 'admin:shop_order_change' order.pk %}">{{ order.reference }}</a></td><td>{{ order.user.email }}</td><td>{{ order.created_at|date:"M j, Y" }}</td><td>₹{{ order.total|floatformat:2 }}</td><td>{{ order.get_payment_method_display }}</td><td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td></tr>
+          <tr><td><a class="order-reference" href="{% url 'admin-dashboard-orders' %}">{{ order.reference }}</a></td><td>{{ order.user.email }}</td><td>{{ order.created_at|date:"M j, Y" }}</td><td>₹{{ order.total|floatformat:2 }}</td><td>{{ order.get_payment_method_display }}</td><td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td></tr>
           {% endfor %}
         </tbody></table></div>
         {% else %}<p class="empty-state">No orders yet. New orders will appear here.</p>{% endif %}
       </article>
 
       <article class="dashboard-panel inventory-panel">
-        <div class="panel-heading"><div><span class="dashboard-eyebrow">INVENTORY</span><h2>Out of stock</h2></div><a href="{% url 'admin:shop_product_changelist' %}">Manage products <i class="bi bi-arrow-right"></i></a></div>
+        <div class="panel-heading"><div><span class="dashboard-eyebrow">INVENTORY</span><h2>Out of stock</h2></div><a href="{% url 'admin-dashboard-products' %}">Manage stock <i class="bi bi-arrow-right"></i></a></div>
         {% if low_stock_products %}<ul class="inventory-list">
           {% for product in low_stock_products %}<li><span><strong>{{ product.title }}</strong><small>{{ product.brand }}</small></span><span class="status-pill status-cancelled">Unavailable</span></li>{% endfor %}
         </ul>{% else %}<p class="empty-state">Everything in the catalog is marked in stock.</p>{% endif %}

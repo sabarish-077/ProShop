@@ -1,0 +1,9 @@
+{% extends "shop/admin_resource_base.html" %}
+{% block title %}Products and stock{% endblock %}
+{% block content %}
+<div class="resource-heading"><div><span class="dashboard-eyebrow">CATALOG MANAGEMENT</span><h1>Products & stock</h1><p>Set the available quantity. A zero quantity marks a product out of stock.</p></div><div class="resource-actions"><a class="resource-link" href="{{ add_product_url }}"><i class="bi bi-plus-lg"></i> Add product</a><a class="resource-link secondary" href="{{ edit_product_url }}">Edit product details</a></div></div>
+<section class="resource-panel"><div class="table-scroll"><table class="resource-table"><thead><tr><th>PRODUCT</th><th>CATEGORY</th><th>PRICE</th><th>AVAILABILITY</th><th>UPDATE STOCK</th></tr></thead><tbody>
+{% for product in products %}<tr><td><strong>{{ product.title }}</strong><br><small>{{ product.brand }}</small></td><td>{{ product.department }}</td><td>₹{{ product.price|floatformat:2 }}</td><td>{% if product.in_stock %}<span class="status-pill status-confirmed">In stock</span>{% else %}<span class="status-pill status-cancelled">Out of stock</span>{% endif %}</td><td><form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="product_id" value="{{ product.pk }}"><label for="stock-{{ product.pk }}">Quantity</label><input id="stock-{{ product.pk }}" type="number" name="stock" min="0" max="1000000" value="{{ product.catalog_data.stock|default_if_none:0 }}" required><button class="resource-button" type="submit">Save stock</button></form></td></tr>
+{% empty %}<tr><td colspan="5">No products have been added yet. Use Add product to create the first one.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

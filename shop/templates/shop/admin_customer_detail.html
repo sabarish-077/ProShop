@@ -1,0 +1,9 @@
+{% extends "shop/admin_resource_base.html" %}
+{% block title %}Customer details{% endblock %}
+{% block content %}
+<div class="resource-heading"><div><span class="dashboard-eyebrow">CUSTOMER PROFILE</span><h1>{{ customer.get_full_name|default:customer.username }}</h1><p>Account and order details</p></div><a class="resource-link secondary" href="{% url 'admin-dashboard-customers' %}">Back to customers</a></div>
+<section class="resource-panel"><div class="customer-grid"><div><small>Name</small>{{ customer.get_full_name|default:customer.username }}</div><div><small>Email</small>{{ customer.email|default:"Not provided" }}</div><div><small>Username</small>{{ customer.username }}</div><div><small>Joined</small>{{ customer.date_joined|date:"M j, Y H:i" }}</div><div><small>Last login</small>{{ customer.last_login|date:"M j, Y H:i"|default:"Never" }}</div></div></section>
+<section class="resource-panel"><h2>Orders</h2><div class="table-scroll"><table class="resource-table"><thead><tr><th>ORDER</th><th>DATE</th><th>ITEMS</th><th>DELIVERY</th><th>TOTAL</th><th>PAYMENT / STATUS</th></tr></thead><tbody>
+{% for order in orders %}<tr><td>{{ order.reference }}</td><td>{{ order.created_at|date:"M j, Y H:i" }}</td><td>{% for item in order.items.all %}{{ item.title_snapshot }} × {{ item.quantity }}{% if not forloop.last %}<br>{% endif %}{% empty %}—{% endfor %}</td><td>{{ order.recipient_name }}<br>{{ order.address }}{% if order.city %}, {{ order.city }}{% endif %}<br>{{ order.region }} {{ order.postal_code }}</td><td>₹{{ order.total|floatformat:2 }}</td><td>{{ order.get_payment_method_display }}<br><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="6">This customer has no orders.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}
