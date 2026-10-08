@@ -1,10 +1,12 @@
 import json
+from io import StringIO
 from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.core.management import call_command
 from django.db import DatabaseError
 from django.test import TestCase, override_settings
 from django.utils.crypto import get_random_string
@@ -16,8 +18,7 @@ from .models import Product
 
 class PublicPageTests(TestCase):
     def test_vercel_prefers_project_scoped_database_url(self):
-        with patch.dict("os.environ", {
-            "VERCEL": "1",
+        with patch("proshop_site.settings.IS_VERCEL", True), patch.dict("os.environ", {
             "DATABASE_URL": "postgresql://generic.example/db",
             "PROSHOP_DB_DATABASE_URL": "postgresql://proshop.example/db",
         }):
@@ -27,8 +28,8 @@ class PublicPageTests(TestCase):
             )
 
     def test_local_database_url_precedence_is_unchanged(self):
-        with patch.dict("os.environ", {
-            "VERCEL": "0",
+        with patch("proshop_site.settings.IS_VERCEL", False), patch.dict("os.environ", {
+            "VERCEL": "1",
             "DATABASE_URL": "postgresql://generic.example/db",
             "PROSHOP_DB_DATABASE_URL": "postgresql://proshop.example/db",
         }):
@@ -141,6 +142,22 @@ class ProductApiTests(TestCase):
     def test_unknown_product_returns_not_found(self):
         response = self.client.get("/api/products/not-a-real-product/")
         self.assertEqual(response.status_code, 404)
+
+
+class CatalogImportTests(TestCase):
+    def test_import_catalog_is_repeatable_and_preserves_stock(self):
+        call_command("import_catalog", stdout=StringIO())
+        self.assertEqual(Product.objects.count(), 16)
+
+        product = Product.objects.get(pk="horizon-x")
+        product.catalog_data = {**product.catalog_data, "stock": 2}
+        product.save(update_fields=["catalog_data"])
+
+        call_command("import_catalog", stdout=StringIO())
+
+        self.assertEqual(Product.objects.count(), 16)
+        product.refresh_from_db()
+        self.assertEqual(product.catalog_data["stock"], 2)
 
 
 @override_settings(

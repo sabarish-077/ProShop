@@ -7,19 +7,20 @@ from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+IS_VERCEL = os.environ.get("VERCEL") == "1"
 load_dotenv(BASE_DIR / ".env.local")
 load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-change-this-before-deploying")
-DEBUG_DEFAULT = "false" if os.environ.get("VERCEL") == "1" else "true"
+DEBUG_DEFAULT = "false" if IS_VERCEL else "true"
 DEBUG = os.environ.get("DJANGO_DEBUG", DEBUG_DEFAULT).strip().lower() in {"1", "true", "yes"}
 VERCEL_HOSTS = [os.environ[key].strip() for key in (
     "VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL"
-) if os.environ.get(key, "").strip()]
+) if IS_VERCEL and os.environ.get(key, "").strip()]
 VERCEL_ORIGINS = [f"https://{host}" for host in VERCEL_HOSTS]
 SITE_URL = os.environ.get(
     "DJANGO_SITE_URL",
     f"https://{os.environ.get('VERCEL_PROJECT_PRODUCTION_URL') or os.environ.get('VERCEL_URL')}"
-    if os.environ.get("VERCEL_PROJECT_PRODUCTION_URL") or os.environ.get("VERCEL_URL")
+    if IS_VERCEL and (os.environ.get("VERCEL_PROJECT_PRODUCTION_URL") or os.environ.get("VERCEL_URL"))
     else "http://127.0.0.1:8000",
 )
 SITE_URL_HOST = urlparse(SITE_URL).hostname
@@ -37,7 +38,7 @@ CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(
 def _database_url_from_environment():
     database_url = os.environ.get("DATABASE_URL", "").strip()
     proshop_database_url = os.environ.get("PROSHOP_DB_DATABASE_URL", "").strip()
-    if os.environ.get("VERCEL") == "1":
+    if IS_VERCEL:
         return proshop_database_url or database_url
     return database_url or proshop_database_url
 
@@ -48,7 +49,7 @@ HAS_POSTGRES_SETTINGS = all(os.environ.get(key) for key in (
 ))
 RUNNING_MANAGEMENT_COMMAND = Path(sys.argv[0]).name.lower() == "manage.py"
 TRUSTED_REVERSE_PROXY = (
-    os.environ.get("VERCEL") == "1"
+    IS_VERCEL
     or os.environ.get("DJANGO_TRUST_PROXY", "false").strip().lower() == "true"
 )
 if not DEBUG:

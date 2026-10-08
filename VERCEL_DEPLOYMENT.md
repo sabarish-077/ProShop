@@ -1,6 +1,6 @@
 # Deploy ProShop to Vercel
 
-Vercel detects this Django project from `manage.py`, builds its Python function, and collects Django static files for the CDN. No custom Vercel build command is needed. `DATABASE_URL` is supported for hosted PostgreSQL; Django migrations are a separate one-time setup step.
+Vercel builds this Django project and runs database migrations plus static-file collection during each Production and Preview build. `DATABASE_URL` is supported for hosted PostgreSQL; ensure the correct database URL is available to each Vercel environment before deploying.
 
 ## 1. Put the project in GitHub
 
@@ -48,16 +48,15 @@ After deployment, verify that `/api/health/` returns JSON `{"status":"ok"}`, `/a
 
 Email verification links use Django's default three-day token lifetime. Links also become invalid if the account database or `DJANGO_SECRET_KEY` changes; open the account page again and use **Send a new link** for an unverified account.
 
-## 5. Deploy, then initialize the database
+## 5. Deploy and initialize each database
 
-Deploy from the Vercel project page. After the environment variables are set, pull the Vercel environment into a local ignored file using the Vercel CLI (`vercel env pull .env.local`), then run these from this project folder with the same Python environment/dependencies:
+Deploy after setting the correct private database URL for each intended environment (Production and, separately, Preview). The Vercel build runs migrations and collects static files:
 
 ```powershell
-python manage.py migrate
-python manage.py import_catalog
-python manage.py createsuperuser
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
 ```
 
-The local `.env.local` file must contain the production `DATABASE_URL`, production `DJANGO_SECRET_KEY`, and required production settings so those commands connect to the hosted database. Do not commit that file. For the account/domain values required at command time, use the same environment variables as in Vercel. Redeploy after changing environment variables.
+Migrations create any missing authentication tables (including Django Axes' lockout table) without deleting existing users, orders, or products. Do not point Preview at Production unless that is intentional. Run `python manage.py import_catalog` once for each environment that needs its catalog populated; the importer preserves current stock quantities for existing products. Create a Django staff account separately with `python manage.py createsuperuser` using the matching environment's private database settings; do not commit database URLs or secrets. The `VERCEL=1` runtime marker is read before local dotenv files, so `.env.local` cannot accidentally switch a local management command to Vercel's database-selection behavior.
 
 Open the Vercel URL and check `/api/health/`, `/admin/`, and `/admin-dashboard/`. Test email verification and Razorpay using test credentials before switching to live payment keys. Keep SMTP and payment secrets only in Vercel's environment variable settings.

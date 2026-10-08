@@ -24,7 +24,7 @@ For Vercel setup, database, and environment variable instructions, see [VERCEL_D
 
 - Set `DJANGO_DEBUG=false`, a unique long `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, and `DJANGO_CSRF_TRUSTED_ORIGINS`.
 - Serve behind HTTPS. When TLS ends at a trusted reverse proxy such as Vercel, set `DJANGO_TRUST_PROXY=true` and leave `DJANGO_SSL_REDIRECT=false`; the proxy handles public HTTPS while Django keeps secure cookies and HSTS enabled.
-- Run `python manage.py migrate`, `python manage.py import_catalog`, and `python manage.py collectstatic --noinput` during release.
+- Run `python manage.py migrate`, `python manage.py import_catalog`, and `python manage.py collectstatic --noinput` during release. Vercel migrations and static collection run automatically from `vercel.json`; import the catalog separately when a new database needs initial data.
 - Start with `gunicorn proshop_site.wsgi:application` on Linux or another production WSGI server.
 - Back up the database and keep credentials in the host's secret store. Do not commit `.env` or the SQLite database.
 
