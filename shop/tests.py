@@ -13,7 +13,7 @@ from django.utils.crypto import get_random_string
 
 from proshop_site.settings import _database_url_from_environment
 
-from .models import Product
+from .models import Order, Product
 
 
 class PublicPageTests(TestCase):
@@ -253,3 +253,46 @@ class CheckoutAccessTests(TestCase):
             self.client.post("/api/payments/razorpay/verify/", data="{}", content_type="application/json").status_code,
             401,
         )
+
+
+@override_settings(RAZORPAY_KEY_ID="", RAZORPAY_KEY_SECRET="")
+class CashOnDeliveryTests(TestCase):
+    @patch("shop.checkout_api.requests.post")
+    def test_cod_order_does_not_require_or_call_razorpay(self, razorpay_post):
+        user = get_user_model().objects.create_user(
+            username="cod-customer@example.test",
+            email="cod-customer@example.test",
+            password="Strong-Test-Password-2026!",
+            is_active=True,
+        )
+        product = Product.objects.create(
+            id="cod-test-item",
+            title="COD test item",
+            brand="Test",
+            department="Electronics",
+            price="1200.00",
+            catalog_data={"stock": 2},
+        )
+        self.client.force_login(user)
+        response = self.client.post(
+            "/api/orders/",
+            data=json.dumps({
+                "payment_method": "cod",
+                "items": [{"product_id": product.pk, "quantity": 1}],
+                "address": {
+                    "first_name": "COD", "last_name": "Customer", "address": "1 Main Street",
+                    "city": "Chennai", "region": "Tamil Nadu", "postal_code": "600001",
+                },
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 201, response.content)
+        result = response.json()
+        self.assertEqual(result["payment_method"], "cod")
+        self.assertNotIn("key_id", result)
+        self.assertEqual(result["order"]["status"], Order.Status.COD_PENDING)
+        self.assertIsNone(result["order"]["razorpay_order_id"])
+        razorpay_post.assert_not_called()
+        product.refresh_from_db()
+        self.assertEqual(product.catalog_data["stock"], 1)

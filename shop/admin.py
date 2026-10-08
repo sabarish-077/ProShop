@@ -19,8 +19,8 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ("reference", "user", "status", "total", "created_at")
-    list_filter = ("status", "created_at")
+    list_display = ("reference", "user", "payment_method", "status", "total", "created_at")
+    list_filter = ("payment_method", "status", "created_at")
     search_fields = ("reference", "user__email")
-    readonly_fields = ("reference", "user", "recipient_name", "address", "city", "region", "postal_code", "subtotal", "discount", "promo_code", "gift_packaging", "gift_wrap_cost", "tax", "total", "created_at")
+    readonly_fields = ("reference", "user", "payment_method", "recipient_name", "address", "city", "region", "postal_code", "subtotal", "discount", "promo_code", "gift_packaging", "gift_wrap_cost", "tax", "total", "created_at")
     inlines = (OrderItemInline,)

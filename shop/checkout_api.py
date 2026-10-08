@@ -44,6 +44,7 @@ def _order_json(order):
     return {
         "reference": order.reference,
         "status": order.status,
+        "payment_method": order.payment_method,
         "razorpay_order_id": order.razorpay_order_id,
         "total": str(order.total),
         "gift_packaging": order.gift_packaging,
@@ -97,10 +98,6 @@ def create_order(request):
     if not request.user.is_active:
         return _error("Verify your email before placing an order.", 403)
     try:
-        razorpay_auth, razorpay_key_id = _razorpay_client()
-    except RuntimeError:
-        return _error("Online payments are temporarily unavailable. Please try again later.", 503)
-    try:
         payload = _json_body(request)
     except (ValueError, UnicodeDecodeError, json.JSONDecodeError):
         return _error("Please check your order and try again.")
@@ -140,6 +137,16 @@ def create_order(request):
     gift_packaging = payload.get("gift_packaging", False)
     if not isinstance(gift_packaging, bool):
         return _error("Gift packaging selection is invalid.")
+    payment_method = str(payload.get("payment_method", Order.PaymentMethod.RAZORPAY)).strip().lower()
+    if payment_method not in Order.PaymentMethod.values:
+        return _error("Choose a valid payment method.")
+    razorpay_auth = None
+    razorpay_key_id = ""
+    if payment_method == Order.PaymentMethod.RAZORPAY:
+        try:
+            razorpay_auth, razorpay_key_id = _razorpay_client()
+        except RuntimeError:
+            return _error("Online payments are temporarily unavailable. Please try again later.", 503)
     protection_plan_ids = plan_items
     product_quantities = quantities
     try:
@@ -160,18 +167,22 @@ def create_order(request):
             taxable_total = max(Decimal("0.00"), subtotal - discount)
             tax = (taxable_total * TAX_RATE).quantize(CENT, rounding=ROUND_HALF_UP)
             total = subtotal - discount + gift_wrap + tax
+            order_status = (Order.Status.PENDING if payment_method == Order.PaymentMethod.RAZORPAY
+                            else Order.Status.COD_PENDING)
             order = Order.objects.create(user=request.user, recipient_name=recipient_name, **fields,
                                          subtotal=subtotal, discount=discount, promo_code=promo_code,
                                          gift_packaging=gift_packaging, gift_wrap_cost=gift_wrap,
-                                         tax=tax, total=total)
-            payment_response = requests.post("https://api.razorpay.com/v1/orders", auth=razorpay_auth, json={
-                "amount": int(total * 100), "currency": "INR", "receipt": order.reference,
-                "notes": {"proshop_order": order.reference, "account_id": str(request.user.pk)},
-            }, timeout=(3.05, 10))
-            payment_response.raise_for_status()
-            payment_order = payment_response.json()
-            order.razorpay_order_id = payment_order["id"]
-            order.save(update_fields=["razorpay_order_id"])
+                                         tax=tax, total=total, payment_method=payment_method,
+                                         status=order_status)
+            if payment_method == Order.PaymentMethod.RAZORPAY:
+                payment_response = requests.post("https://api.razorpay.com/v1/orders", auth=razorpay_auth, json={
+                    "amount": int(total * 100), "currency": "INR", "receipt": order.reference,
+                    "notes": {"proshop_order": order.reference, "account_id": str(request.user.pk)},
+                }, timeout=(3.05, 10))
+                payment_response.raise_for_status()
+                payment_order = payment_response.json()
+                order.razorpay_order_id = payment_order["id"]
+                order.save(update_fields=["razorpay_order_id"])
             OrderItem.objects.bulk_create([
                 OrderItem(order=order, product=product, product_id_snapshot=product.id,
                           title_snapshot=product.title, unit_price=product.price, quantity=product_quantities[product.id],
@@ -186,8 +197,11 @@ def create_order(request):
     except Exception:
         logger.exception("Could not create order for user %s", request.user.pk)
         return _error("We could not start checkout just now. Your bag is saved; please try again.", 503)
-    return JsonResponse({"ok": True, "key_id": razorpay_key_id, "currency": "INR",
-                         "amount": int(total * 100), "order": _order_json(order)}, status=201)
+    response_data = {"ok": True, "payment_method": payment_method,
+                     "amount": int(total * 100), "order": _order_json(order)}
+    if payment_method == Order.PaymentMethod.RAZORPAY:
+        response_data.update({"key_id": razorpay_key_id, "currency": "INR"})
+    return JsonResponse(response_data, status=201)
 
 
 @require_POST
@@ -205,6 +219,8 @@ def verify_payment(request):
         return _error("We could not verify this payment.", 400)
     if not all((payment_id, supplied_order_id, signature)) or supplied_order_id != order.razorpay_order_id:
         return _error("We could not verify this payment.", 400)
+    if order.payment_method != Order.PaymentMethod.RAZORPAY:
+        return _error("This order does not use online payment.", 400)
     if order.status != Order.Status.PENDING:
         return _error("This order is no longer awaiting payment.", 409)
     try:

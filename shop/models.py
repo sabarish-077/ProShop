@@ -43,14 +43,20 @@ class Product(models.Model):
 
 
 class Order(models.Model):
+    class PaymentMethod(models.TextChoices):
+        RAZORPAY = "razorpay", "Razorpay"
+        CASH_ON_DELIVERY = "cod", "Cash on delivery"
+
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"
+        COD_PENDING = "cod_pending", "COD payment due"
         CONFIRMED = "confirmed", "Confirmed"
         CANCELLED = "cancelled", "Cancelled"
 
     reference = models.CharField(max_length=20, unique=True, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="shop_orders")
     status = models.CharField(max_length=16, choices=Status.choices, default=Status.PENDING, db_index=True)
+    payment_method = models.CharField(max_length=16, choices=PaymentMethod.choices, default=PaymentMethod.RAZORPAY)
     razorpay_order_id = models.CharField(max_length=64, unique=True, null=True, blank=True)
     razorpay_payment_id = models.CharField(max_length=64, unique=True, null=True, blank=True)
     recipient_name = models.CharField(max_length=150)

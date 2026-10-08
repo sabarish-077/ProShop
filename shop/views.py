@@ -64,6 +64,7 @@ def admin_dashboard(request):
         "customers_count": get_user_model().objects.filter(is_staff=False).count(),
         "orders_count": Order.objects.count(),
         "pending_count": Order.objects.filter(status=Order.Status.PENDING).count(),
+        "cod_pending_count": Order.objects.filter(status=Order.Status.COD_PENDING).count(),
         "confirmed_count": confirmed_orders.count(),
         "revenue": confirmed_orders.aggregate(total=Sum("total"))["total"] or 0,
         "recent_orders": Order.objects.select_related("user").prefetch_related("items")[:8],

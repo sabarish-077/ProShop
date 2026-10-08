@@ -428,15 +428,21 @@ function renderCheckoutForm(step) {
             </div>
 
             <form onsubmit="event.preventDefault(); completeOrder(this.querySelector('button[type=submit]'))">
-                <div class="p-3 rounded bg-light border small text-muted mb-4 d-flex align-items-center gap-2">
-                    <i class="bi bi-shield-lock-fill text-warning fs-5"></i>
-                    <span>Pay securely in Indian rupees with Razorpay. Your order is confirmed after the payment is verified.</span>
+                <div class="mb-3">
+                    <label class="form-check p-3 border rounded-3 mb-2 d-flex align-items-center gap-3">
+                        <input class="form-check-input mt-0" type="radio" name="payment_method" value="razorpay" checked>
+                        <span><strong class="d-block small">Pay online with Razorpay</strong><span class="text-muted small">Secure payment by UPI, card, or net banking.</span></span>
+                    </label>
+                    <label class="form-check p-3 border rounded-3 mb-2 d-flex align-items-center gap-3">
+                        <input class="form-check-input mt-0" type="radio" name="payment_method" value="cod">
+                        <span><strong class="d-block small">Cash on delivery</strong><span class="text-muted small">Pay the courier in cash when your order arrives.</span></span>
+                    </label>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                     <button type="button" class="btn btn-outline-luxury" onclick="renderCheckoutForm(2)">« Back to delivery</button>
                     <button type="submit" class="btn btn-gold px-4 py-2.5">
-                        <i class="bi bi-lock-fill"></i> Pay ${total}
+                        <i class="bi bi-bag-check-fill"></i> Place order · ${total}
                     </button>
                 </div>
             </form>
@@ -470,11 +476,16 @@ async function completeOrder(button) {
                     has_protection_plan: Boolean(item.hasProtectionPlan)
                 })),
                 promo_code: ProShopStore.getAppliedPromo()?.code || '',
-                gift_packaging: Boolean(document.getElementById('gift-packaging-checkbox')?.checked)
+                gift_packaging: Boolean(document.getElementById('gift-packaging-checkbox')?.checked),
+                payment_method: body.querySelector('input[name="payment_method"]:checked')?.value || 'razorpay'
             })
         });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.error || 'We could not place your order. Please try again.');
+        if (result.payment_method === 'cod') {
+            showOrderConfirmation(body, result.order);
+            return;
+        }
         if (typeof Razorpay === 'undefined') throw new Error('Secure checkout did not load. Please refresh and try again.');
         const payment = new Razorpay({
             key: result.key_id,
@@ -514,12 +525,13 @@ async function completeOrder(button) {
 }
 
 function showOrderConfirmation(body, order) {
+        const isCashOnDelivery = order.payment_method === 'cod';
         body.innerHTML = `
             <div class="text-center py-5">
                 <div class="mb-3 text-warning fs-1">✓</div>
-                <h3 class="fw-bold mb-2">Payment confirmed</h3>
+                <h3 class="fw-bold mb-2">${isCashOnDelivery ? 'Order placed' : 'Payment confirmed'}</h3>
                 <p class="text-muted small mb-2">Order number: <strong>${order.reference}</strong></p>
-                <p class="text-muted small max-w-md mx-auto mb-4">Your payment is confirmed and your order is being prepared.</p>
+                <p class="text-muted small max-w-md mx-auto mb-4">${isCashOnDelivery ? 'Pay cash to the courier when your order is delivered.' : 'Your payment is confirmed and your order is being prepared.'}</p>
                 <div class="d-flex justify-content-center gap-3">
                     <a href="index.html" class="btn btn-gold px-4" data-bs-dismiss="modal">Back to home</a>
                     <a href="account.html" class="btn btn-outline-luxury px-4" data-bs-dismiss="modal">View your orders</a>

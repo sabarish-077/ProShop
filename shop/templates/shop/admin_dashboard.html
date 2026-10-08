@@ -28,7 +28,7 @@
 
     <section class="dashboard-stats" aria-label="Store summary">
       <article class="stat-card"><span class="stat-icon"><i class="bi bi-currency-rupee"></i></span><span class="stat-label">CONFIRMED SALES</span><strong>₹{{ revenue|floatformat:2 }}</strong><small>From paid orders</small></article>
-      <article class="stat-card"><span class="stat-icon"><i class="bi bi-bag-check"></i></span><span class="stat-label">ALL ORDERS</span><strong>{{ orders_count }}</strong><small>{{ pending_count }} awaiting payment</small></article>
+      <article class="stat-card"><span class="stat-icon"><i class="bi bi-bag-check"></i></span><span class="stat-label">ALL ORDERS</span><strong>{{ orders_count }}</strong><small>{{ pending_count }} online payments pending · {{ cod_pending_count }} COD orders due</small></article>
       <article class="stat-card"><span class="stat-icon"><i class="bi bi-box-seam"></i></span><span class="stat-label">PRODUCTS</span><strong>{{ products_count }}</strong><small>In your catalog</small></article>
       <article class="stat-card"><span class="stat-icon"><i class="bi bi-people"></i></span><span class="stat-label">CUSTOMER ACCOUNTS</span><strong>{{ customers_count }}</strong><small>{{ confirmed_count }} paid orders</small></article>
     </section>
@@ -37,9 +37,9 @@
       <article class="dashboard-panel orders-panel">
         <div class="panel-heading"><div><span class="dashboard-eyebrow">LATEST ACTIVITY</span><h2>Recent orders</h2></div><a href="{% url 'admin:shop_order_changelist' %}">View all <i class="bi bi-arrow-right"></i></a></div>
         {% if recent_orders %}
-        <div class="table-scroll"><table><thead><tr><th>ORDER</th><th>CUSTOMER</th><th>DATE</th><th>AMOUNT</th><th>STATUS</th></tr></thead><tbody>
+        <div class="table-scroll"><table><thead><tr><th>ORDER</th><th>CUSTOMER</th><th>DATE</th><th>AMOUNT</th><th>PAYMENT</th><th>STATUS</th></tr></thead><tbody>
           {% for order in recent_orders %}
-          <tr><td><a class="order-reference" href="{% url 'admin:shop_order_change' order.pk %}">{{ order.reference }}</a></td><td>{{ order.user.email }}</td><td>{{ order.created_at|date:"M j, Y" }}</td><td>₹{{ order.total|floatformat:2 }}</td><td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td></tr>
+          <tr><td><a class="order-reference" href="{% url 'admin:shop_order_change' order.pk %}">{{ order.reference }}</a></td><td>{{ order.user.email }}</td><td>{{ order.created_at|date:"M j, Y" }}</td><td>₹{{ order.total|floatformat:2 }}</td><td>{{ order.get_payment_method_display }}</td><td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td></tr>
           {% endfor %}
         </tbody></table></div>
         {% else %}<p class="empty-state">No orders yet. New orders will appear here.</p>{% endif %}
